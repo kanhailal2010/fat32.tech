@@ -61,7 +61,7 @@ $alertType    = '';
                   <div class="row">
                       <div class="col-md-6">
                           <div class="form-input mt-25">
-                              <label>Name</label>
+                              <label>Email</label>
                               <div class="input-items default">
                                 <i class="lni lni-user"></i>
                                 <input type="email" name="email" placeholder="Email">
