@@ -281,7 +281,8 @@
                                 <i class="lni lni-map-marker"></i>
                             </div>
                             <div class="contact-info-content media-body">
-                                <p class="text">Fat32 Tech, Lashkaribagh, Nagpur</p>
+                                <p class="text">Fat32 Tech, Lashkaribagh,</p>
+                                <p class="text">Nagpur, Maharashtra-440017</p>
                             </div>
                         </div> <!-- single contact info -->
                     </div>
