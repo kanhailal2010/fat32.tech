@@ -213,10 +213,10 @@
                                                 <a class="image-popup" href="assets/images/portfolio/p1.jpg"><i class="lni lni-zoom-in"></i></a>
                                                 <img src="assets/images/portfolio/shape.svg" alt="shape" class="shape">
                                             </div>
-                                            <div class="portfolio-icon">
+                                            <!-- <div class="portfolio-icon">
                                                 <a href="#"><i class="lni lni-link"></i></a>
                                                 <img src="assets/images/portfolio/shape.svg" alt="shape" class="shape">
-                                            </div>
+                                            </div> -->
                                         </div>
                                     </div>
                                 </div>
@@ -232,10 +232,6 @@
                                                 <a class="image-popup" href="assets/images/portfolio/p2.jpg"><i class="lni lni-zoom-in"></i></a>
                                                 <img src="assets/images/portfolio/shape.svg" alt="shape" class="shape">
                                             </div>
-                                            <div class="portfolio-icon">
-                                                <a href="#"><i class="lni lni-link"></i></a>
-                                                <img src="assets/images/portfolio/shape.svg" alt="shape" class="shape">
-                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -249,10 +245,6 @@
                                         <div class="portfolio-content">
                                             <div class="portfolio-icon">
                                                 <a class="image-popup" href="assets/images/portfolio/p3.jpg"><i class="lni lni-zoom-in"></i></a>
-                                                <img src="assets/images/portfolio/shape.svg" alt="shape" class="shape">
-                                            </div>
-                                            <div class="portfolio-icon">
-                                                <a href="#"><i class="lni lni-link"></i></a>
                                                 <img src="assets/images/portfolio/shape.svg" alt="shape" class="shape">
                                             </div>
                                         </div>
