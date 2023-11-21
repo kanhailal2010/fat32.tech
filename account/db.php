@@ -114,16 +114,19 @@ function changePassword($email, $password) {
 // insert into users VALUES (null, 'Kanhai', 'kanhailal2010@gmail.com', 9008654469);
 // select * from users where email = 'kanhailal2010@gmail.com';
 
-// CREATE TABLE subscriptions (
-//     id INT PRIMARY KEY AUTO_INCREMENT,
-//     user_id INT NOT NULL,
-//     name VARCHAR(255) NOT NULL,
-//     email VARCHAR(255) UNIQUE,
-//     phone VARCHAR(20) UNIQUE,
-//     sub_start_date DATE,
-//     sub_end_date DATE,
-//     subscription_status ENUM('active', 'inactive', 'cancelled') NOT NULL DEFAULT 'inactive'
-//   );
+// CREATE TABLE `subscriptions` (
+//   `id` int NOT NULL AUTO_INCREMENT,
+//   `user_id` int NOT NULL,
+//   `name` varchar(255) NOT NULL,
+//   `email` varchar(255) DEFAULT NULL,
+//   `phone` varchar(20) DEFAULT NULL,
+//   `sub_start_date` date DEFAULT NULL,
+//   `sub_end_date` date DEFAULT NULL,
+//   `subscription_status` enum('active','inactive','cancelled') NOT NULL DEFAULT 'inactive',
+//   PRIMARY KEY (`id`),
+//   UNIQUE KEY `email` (`email`),
+//   UNIQUE KEY `phone` (`phone`)
+// )
 // insert into subscriptions (id, user_id, name, email, phone, sub_start_date, sub_end_date,subscription_status) VALUES (null,'00004', 'Kanhai', 'kanhailal2010@gmail.com', 9008654469, null, null, 'inactive');
 // select * from subscriptions where email='kanhailal2010@gmail.com' limit 5;
 // update subscriptions set subscription_status = 'active' where user_id = 4;
@@ -143,3 +146,5 @@ function changePassword($email, $password) {
 //   transaction_id VARCHAR(255) NOT NULL,
 //   billing_address VARCHAR(255) NOT NULL
 // );
+
+// INSERT INTO orders VALUES (null, 2, '2023-11-21 15:20:21', 'paid', '118.00', 'csefo2e9Z19', 'Nagpur, 440001')
