@@ -46,7 +46,7 @@
         <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <span class="mr-2 d-none d-lg-inline text-gray-600 small"><?php echo getSessionValue('user_name', 'Name');?></span>
-            <img class="img-profile rounded-circle" src="<?php echo getSessionValue('user_photo', 'img/undraw_profile.svg');?>">
+            <img class="img-profile rounded-circle" src="<?php echo getSessionValue('user_photo', SITE_URL.'/account/img/undraw_profile.svg');?>">
         </a>
         <!-- Dropdown - User Information -->
         <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"

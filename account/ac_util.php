@@ -14,7 +14,7 @@ if(!isset($_SESSION)) {  session_start(); }
 if(!$_SESSION['logged_in']) { redirectTo(SITE_URL.'login/');  }
 
 function getSessionValue($key, $default){
-  return isset($_SESSION[$key]) ? $_SESSION[$key] : $default;
+  return isset($_SESSION[$key]) && !empty($_SESSION[$key]) ? $_SESSION[$key] : $default;
 }
 
 function handleFatalError() {
