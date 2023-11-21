@@ -93,14 +93,10 @@
             contact information provided on this website.
           </li>
         </ul>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
       </div>
     </div>  <!-- row -->
   </div>  <!-- container -->
+</section>
   <style>
     .navbar-area { background: #0166F3; }
   </style>

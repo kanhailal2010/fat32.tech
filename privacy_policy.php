@@ -108,14 +108,10 @@
         <p>
           For any queries, questions or grievances about this Policy, please contact us using the contact information provided on this website.
         </p>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
       </div>
     </div>  <!-- row -->
   </div>  <!-- container -->
+</section>
   <style>
     .navbar-area { background: #0166F3; }
   </style>

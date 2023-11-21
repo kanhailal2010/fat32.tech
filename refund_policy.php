@@ -40,14 +40,10 @@
             Days days for the refund to be processed to the end customer
           </li>
         </ul>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
       </div>
     </div>  <!-- row -->
   </div>  <!-- container -->
+</section>
   <style>
     .navbar-area { background: #0166F3; }
   </style>

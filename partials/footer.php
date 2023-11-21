@@ -5,7 +5,7 @@
             <div class="row justify-content-center">
                 <div class="col-lg-6">
                     <div class="footer-logo text-center">
-                        <a class="mt-30" href="index.html"><img src="assets/images/fat32-logo.png" alt="Logo"></a>
+                        <a class="mt-30" href="/#home"><img src="<?php echo siteUrl('assets/images/fat32-logo.png');?>" alt="Logo"></a>
                     </div> <!-- footer logo -->
                     <!-- <ul class="social text-center mt-60">
                         <li><a href="https://facebook.com/uideckHQ"><i class="lni lni-facebook-filled"></i></a></li>
@@ -23,13 +23,16 @@
                 <div class="col-lg-12">
                     <div class="row justify-content-center">
                       <div class="footer-links">
-                        <a href="<?php echo SITE_URL;?>terms_and_conditions.php" rel="noopener noreferrer"> Terms & Conditions </a>
+                        <a href="<?php echo SITE_URL;?>terms_and_conditions" rel="noopener noreferrer"> Terms & Conditions </a>
                       </div>
                       <div class="footer-links">
-                        <a href="<?php echo SITE_URL;?>privacy_policy.php" rel="noopener noreferrer"> Privacy Policy </a>
+                        <a href="<?php echo SITE_URL;?>privacy_policy" rel="noopener noreferrer"> Privacy Policy </a>
                       </div>
                       <div class="footer-links">
-                        <a href="<?php echo SITE_URL;?>refund_policy.php" rel="noopener noreferrer"> Refund Policy </a>
+                        <a href="<?php echo SITE_URL;?>refund_policy" rel="noopener noreferrer"> Refund Policy </a>
+                      </div>
+                      <div class="footer-links">
+                        <a href="<?php echo SITE_URL;?>delivery" rel="noopener noreferrer"> Shipping & Delivery </a>
                       </div>
                     </div> <!-- row -->
                     <div class="row justify-content-center">
@@ -72,32 +75,32 @@
 
 
     <!--====== Jquery js ======-->
-    <script src="assets/js/vendor/jquery-1.12.4.min.js"></script>
-    <script src="assets/js/vendor/modernizr-3.7.1.min.js"></script>
+    <script src="<?php echo siteUrl('assets/js/vendor/jquery-1.12.4.min.js');?>"></script>
+    <script src="<?php echo siteUrl('assets/js/vendor/modernizr-3.7.1.min.js');?>"></script>
     
     <!--====== Bootstrap js ======-->
-    <script src="assets/js/popper.min.js"></script>
-    <script src="assets/js/bootstrap.min.js"></script>
+    <script src="<?php echo siteUrl('assets/js/popper.min.js');?>"></script>
+    <script src="<?php echo siteUrl('assets/js/bootstrap.min.js');?>"></script>
     
     <!--====== Slick js ======-->
-    <script src="assets/js/slick.min.js"></script>
+    <script src="<?php echo siteUrl('assets/js/slick.min.js');?>"></script>
     
     <!--====== Magnific Popup js ======-->
-    <script src="assets/js/jquery.magnific-popup.min.js"></script>
+    <script src="<?php echo siteUrl('assets/js/jquery.magnific-popup.min.js');?>"></script>
     
     <!--====== Ajax Contact js ======-->
-    <script src="assets/js/ajax-contact.js"></script>
+    <script src="<?php echo siteUrl('assets/js/ajax-contact.js');?>"></script>
     
     <!--====== Isotope js ======-->
-    <script src="assets/js/imagesloaded.pkgd.min.js"></script>
-    <script src="assets/js/isotope.pkgd.min.js"></script>
+    <script src="<?php echo siteUrl('assets/js/imagesloaded.pkgd.min.js');?>"></script>
+    <script src="<?php echo siteUrl('assets/js/isotope.pkgd.min.js');?>"></script>
     
     <!--====== Scrolling Nav js ======-->
-    <script src="assets/js/jquery.easing.min.js"></script>
-    <script src="assets/js/scrolling-nav.js"></script>
+    <script src="<?php echo siteUrl('assets/js/jquery.easing.min.js');?>"></script>
+    <script src="<?php echo siteUrl('assets/js/scrolling-nav.js');?>"></script>
     
     <!--====== Main js ======-->
-    <script src="assets/js/main.js"></script>
+    <script src="<?php echo siteUrl('assets/js/main.js');?>"></script>
     
 </body>
 

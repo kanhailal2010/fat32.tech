@@ -1,4 +1,6 @@
 <?php
+header('Access-Control-Allow-Origin: https://fat32.tech');
+header('Access-Control-Allow-Methods: OPTIONS,POST');
 
     // Only process POST reqeusts.
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
