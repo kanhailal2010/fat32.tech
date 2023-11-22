@@ -1,12 +1,13 @@
 <?php
 $http_origin = $_SERVER['HTTP_ORIGIN'];
-$allowedOrigins = ['https://kite.zerodha.com/','https://fat32.tech/'];
+$allowedOrigins = ['https://kite.zerodha.com','https://fat32.tech'];
 if(in_array($http_origin, $allowedOrigins)) {
   header("Access-Control-Allow-Origin: $http_origin");
-  // header('Access-Control-Allow-Origin: *');
 }
-header('Access-Control-Allow-Methods: *');
 header('Access-Control-Allow-Credentials: true');
+header("Access-Control-Allow-Headers: X-Requested-With, Content-Type, Origin, Cache-Control, Pragma, Authorization, Accept, Accept-Encoding");
+header("Access-Control-Allow-Methods: PUT, POST, GET, OPTIONS, DELETE");
+// header("Access-Control-Max-Age: 1000");
 
 include_once(__DIR__.'/../partials/par_util.php');
 include_once(__DIR__.'/../account/db.php');
