@@ -22,7 +22,7 @@ function getSubscriptionDetails($emailOrPhone) {
   $query->execute();
   $result = $query->fetch(PDO::FETCH_ASSOC);
 
-  // var_dump($result);
+  // var_dump('user details for email::',$emailOrPhone, $result);
 
   if ($result) {
     $userId = $result['user_id'];
@@ -43,6 +43,7 @@ function getSubscriptionDetails($emailOrPhone) {
 if(isset($_REQUEST['check_subscription']) && !empty($_REQUEST['check_subscription'])) {
   $res = [];
   $res['status'] = false;
+  if($_ENV['DEBUG']) { $res['server'] = $_SERVER;}
   
   $valid = validateAjaxData($_REQUEST);
   if(!$valid['status']) {
@@ -56,7 +57,7 @@ if(isset($_REQUEST['check_subscription']) && !empty($_REQUEST['check_subscriptio
   $res['subscription']        = false;
 
   // Example usage
-  $emailOrPhone = $_REQUEST['email'];
+  $emailOrPhone = str_replace('"','',$_REQUEST['email']);
   $subscription = getSubscriptionDetails($emailOrPhone);
   if ($subscription !== false) {
     $res['msg']                 = "User has an active subscription.";
