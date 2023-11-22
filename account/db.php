@@ -102,16 +102,18 @@ function changePassword($email, $password) {
   }
 }
 
-// CREATE TABLE users (
-//   id INT PRIMARY KEY AUTO_INCREMENT,
-//   name VARCHAR(255) NOT NULL,
-//   password VARCHAR(255) NOT NULL,
-//   email VARCHAR(255) NOT NULL UNIQUE,
-//   phone VARCHAR(20) NOT NULL,
-//   photo VARCHAR(255),
-//   google_id VARCHAR(255) 
-// );
-// insert into users VALUES (null, 'Kanhai', 'kanhailal2010@gmail.com', 9008654469);
+// CREATE TABLE `users` (
+//   `id` int NOT NULL AUTO_INCREMENT,
+//   `name` varchar(255) NOT NULL,
+//   `email` varchar(255) NOT NULL,
+//   `password` varchar(255) DEFAULT NULL,
+//   `phone` varchar(20) NOT NULL,
+//   `photo` varchar(255) DEFAULT NULL,
+//   `google_id` varchar(255) DEFAULT NULL,
+//   PRIMARY KEY (`id`),
+//   UNIQUE KEY `email` (`email`)
+// )
+// insert into users VALUES (null, 'Kanhai', 'kanhailal2010@gmail.com', 'password_not_set', 9008654469, '', '');
 // select * from users where email = 'kanhailal2010@gmail.com';
 
 // CREATE TABLE `subscriptions` (

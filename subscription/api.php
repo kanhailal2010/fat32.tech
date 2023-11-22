@@ -1,8 +1,10 @@
 <?php
-$http_origin = $_SERVER['HTTP_ORIGIN'];
-$allowedOrigins = ['https://kite.zerodha.com','https://fat32.tech'];
-if(in_array($http_origin, $allowedOrigins)) {
-  header("Access-Control-Allow-Origin: $http_origin");
+if(isset($_SERVER['HTTP_ORIGIN'])) {
+  $http_origin = $_SERVER['HTTP_ORIGIN'];
+  $allowedOrigins = ['https://kite.zerodha.com','https://fat32.tech'];
+  if(in_array($http_origin, $allowedOrigins)) {
+    header("Access-Control-Allow-Origin: $http_origin");
+  }
 }
 header('Access-Control-Allow-Credentials: true');
 header("Access-Control-Allow-Headers: X-Requested-With, Content-Type, Origin, Cache-Control, Pragma, Authorization, Accept, Accept-Encoding");
