@@ -61,7 +61,12 @@ function createRazorOrder($userId, $receipt, $amount){
       ]
     ]);
   }
-  
+
+function verifySignature($requestBody,$signature){
+  $calSign = hash_hmac('sha256', $requestBody, $_ENV['WEBHOOK_SECRET']);
+  return $calSign == $signature ? true : false;
+}
+
 function createWebhookTransaction(){
   try {
   // Get the webhook body and signature
@@ -69,6 +74,8 @@ function createWebhookTransaction(){
   $webhookSignature = $_SERVER['HTTP_X_RAZORPAY_SIGNATURE']; // Signature sent by Razorpay
   $keySecret        = $_ENV['WEBHOOK_SECRET'];
 
+  saveWebhookTransaction(json_encode($_SERVER));
+  saveWebhookTransaction($webhookBody);
   require_once(__DIR__.'/razorpay-php-2.8.7/Razorpay.php');
   /* PHP SDK: https://github.com/razorpay/razorpay-php */
   $api = new Razorpay\Api\Api($_ENV['KEY_ID'], $_ENV['KEY_SECRET']);
@@ -84,7 +91,9 @@ function createWebhookTransaction(){
     }
     else {
       // Signature is not valid, log the error
-      error_log("Invalid signature received");
+      error_log("Invalid signature received using Razorpay");
+      error_log(verifySignature($webhookBody, $webhookSignature));
+      error_log('the sign razorpay '.$_SERVER['HTTP_X_RAZORPAY_SIGNATURE']);
     }
   }
   //catch exception
@@ -172,3 +181,4 @@ if(isset($_REQUEST['create_orderssssssssssssssssssss'])) {
     error_log($e->getMessage());
   } 
 }
+
