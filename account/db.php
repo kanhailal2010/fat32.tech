@@ -151,9 +151,10 @@ function insertUserOrder($data) {
 }
 
 function saveWebhookTransaction($data){
-  global $db;
+  global $db,$debug;
   try {
-    $sql = "INSERT INTO order_transactions (id, order_id, payment_id, method, user_email, user_phone, payment_status, payment_amount, order_status, order_amount, transaction_data, created_at) VALUES (null, :order_id, :payment_id, :method, :user_email, :user_phone, :payment_status, :payment_amount, :order_status, :order_amount, :transaction_data, :created_at)";
+    $sql = "INSERT INTO order_transactions (id, order_id, payment_id, method, user_email, user_phone, payment_status, payment_amount, order_status, order_amount, transaction_data, created_at) ";
+    $sql .= " VALUES (null, :order_id, :payment_id, :method, :user_email, :user_phone, :payment_status, :payment_amount, :order_status, :order_amount, :transaction_data, :created_at) ";
     return $db->prepare($sql)->execute([
       'order_id'          => $data->payload->payment->entity->order_id,
       'payment_id'        => $data->payload->payment->entity->id,
