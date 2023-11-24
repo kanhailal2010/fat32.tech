@@ -163,8 +163,8 @@ function saveWebhookTransaction($data){
       'user_phone'        => $data->payload->payment->entity->contact,
       'payment_status'    => $data->payload->payment->entity->status,
       'payment_amount'    => $data->payload->payment->entity->amount,
-      'order_status'      => $data->payload->order->entity->status,
-      'order_amount'      => $data->payload->order->entity->amount,
+      'order_status'      => isset($data->payload->order) ? $data->payload->order->entity->status : 'order_not_created',
+      'order_amount'      => isset($data->payload->order) ? $data->payload->order->entity->amount : ($data->payload->payment->entity->amount - $data->payload->payment->entity->fee),
       'transaction_data'  => json_encode($data),
       'created_at'        => Date('Y-m-d H:i:s'),
     ]);
@@ -235,7 +235,7 @@ function saveWebhookTransaction($data){
 //   user_phone VARCHAR(16),
 //   payment_status VARCHAR(20),
 //   payment_amount INT(10) NOT NULL,
-//   order_status enum('created','attempted','paid') NOT NULL DEFAULT 'created',
+//   order_status enum('created','attempted','paid', 'order_not_created') NOT NULL DEFAULT 'created',
 //   order_amount INT(10) NOT NULL,
 //   transaction_data JSON DEFAULT NULL,
 //   created_at DATETIME DEFAULT NULL
