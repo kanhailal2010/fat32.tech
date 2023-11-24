@@ -102,6 +102,73 @@ function changePassword($email, $password) {
   }
 }
 
+// generate order_id for a user.
+function generateReceiptId($userId) {
+  global $db, $debug;
+  // Generate a random order ID
+  $receiptId = 'fat_'.$userId.uniqid();
+
+  // Check if the generated order ID already exists in the database
+  $query = "SELECT COUNT(*) FROM orders WHERE receipt = :receipt_id AND user_id=:user_id";
+  $statement = $db->prepare($query);
+  $statement->bindParam(':receipt_id', $receiptId);
+  $statement->bindParam(':user_id', $userId);
+  $statement->execute();
+  $rowCount = $statement->fetchColumn();
+
+  // If the order ID already exists, generate a new one until a unique one is found
+  if ($rowCount > 0) {
+      return generateReceiptId();
+  }
+
+  return $receiptId;
+}
+
+function insertUserOrder($data) {
+  global $db, $debug;
+  try {
+    $query = $db->prepare("INSERT INTO orders (receipt, pg_order_id, user_id, order_date, order_status, order_notes, total_amount, transaction_id, billing_address) VALUES (:receipt, :pg_order_id, :user_id, :order_date, :order_status, :order_notes, :total_amount, :transaction_id, :billing_address) ");
+    return $query->execute([
+      "receipt" => $data->receipt,
+      "pg_order_id" => $data->pg_order_id,
+      "user_id" => $data->user_id,
+      "order_date" => $data->order_date,
+      "order_status" => $data->order_status,
+      "order_notes" => isset($data->order_notes) ? json_encode($data->order_notes) : [] ,
+      "total_amount" => $data->total_amount,
+      "transaction_id" => $data->transaction_id,
+      "billing_address" => $data->billing_address
+    ]);
+  }
+  //catch exception
+  catch(Exception $e) {
+    if($debug) { echo 'Message: ' .$e->getMessage(); }
+    else {
+      return "DB Error:: Could not Insert Order";
+    }
+    error_log($e->getMessage());
+  } 
+}
+
+function saveWebhookTransaction($data){
+  global $db;
+  // $tr_data = json_encode($data);
+  $tr_data = $data;
+  try {
+    $sql = "INSERT INTO transactions (tr_data) VALUES (:tr_data)";
+    return $db->prepare($sql)->execute([
+      'tr_data' => $tr_data
+    ]);
+  }
+  //catch exception
+  catch(Exception $e) {
+    if($debug) { echo 'Message: ' .$e->getMessage(); }
+    else {
+      return "DB Error:: Could not Insert Webhook data";
+    }
+    error_log($e->getMessage());
+  } 
+}
 // CREATE TABLE `users` (
 //   `id` int NOT NULL AUTO_INCREMENT,
 //   `name` varchar(255) NOT NULL,
@@ -140,13 +207,16 @@ function changePassword($email, $password) {
 // );
 
 // CREATE TABLE orders (
-//   order_id INT PRIMARY KEY AUTO_INCREMENT,
+//   id INT PRIMARY KEY AUTO_INCREMENT,
+//   receipt VARCHAR(50) NOT NULL,
+//   pg_order_id VARCHAR(50) NOT NULL,
 //   user_id INT NOT NULL,
 //   order_date DATETIME NOT NULL,
-//   order_status VARCHAR(255) NOT NULL,
-//   total_amount DECIMAL(10,2) NOT NULL,
+//   order_status enum('created','attempted','paid') NOT NULL DEFAULT 'created',
+//   order_notes JSON DEFAULT NULL,
+//   total_amount INT(10) NOT NULL,
 //   transaction_id VARCHAR(255) NOT NULL,
 //   billing_address VARCHAR(255) NOT NULL
 // );
 
-// INSERT INTO orders VALUES (null, 2, '2023-11-21 15:20:21', 'paid', '118.00', 'csefo2e9Z19', 'Nagpur, 440001')
+// INSERT INTO orders VALUES (null,'fat_receipt', 'order_EKwxwAgItmmXdp', 4, '2023-11-21 15:20:21', 'created', '{"user_id": 4}', '118', 'csefo2e9Z19', 'Nagpur, 440001');

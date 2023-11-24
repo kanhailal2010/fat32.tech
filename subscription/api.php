@@ -40,6 +40,64 @@ function getSubscriptionDetails($emailOrPhone) {
   return false; // User not found
 }
 
+function razorpayAmount($rupees) {
+   // Multiply the rupees by 100 to convert to paise
+   $paise = $rupees * 100;
+   // Remove any decimal places
+   $paise = intval($paise);
+   return $paise;
+}
+
+function createRazorOrder($userId, $receipt, $amount){
+  require_once(__DIR__.'/razorpay-php-2.8.7/Razorpay.php');
+  
+  $api = new Razorpay\Api\Api($_ENV['KEY_ID'], $_ENV['KEY_SECRET']);
+  return $api->order->create([
+    'receipt'         => $receipt,
+    'amount'          => razorpayAmount($amount), // amount in the smallest currency unit
+    'currency'        => 'INR',// <a href="/docs/payments/payments/international-payments/#supported-currencies" target="_blank">See the list of supported currencies</a>.)
+    'notes'           => [
+      'user_id'    => $userId
+      ]
+    ]);
+  }
+  
+function createWebhookTransaction(){
+  try {
+  // Get the webhook body and signature
+  $webhookBody      = file_get_contents('php://input'); // Request body sent by Razorpay
+  $webhookSignature = $_SERVER['HTTP_X_RAZORPAY_SIGNATURE']; // Signature sent by Razorpay
+  $keySecret        = $_ENV['WEBHOOK_SECRET'];
+
+  require_once(__DIR__.'/razorpay-php-2.8.7/Razorpay.php');
+  /* PHP SDK: https://github.com/razorpay/razorpay-php */
+  $api = new Razorpay\Api\Api($_ENV['KEY_ID'], $_ENV['KEY_SECRET']);
+
+    // Verify the webhook signature
+    $isValidSignature = $api->utility->verifyWebhookSignature($webhookBody, $webhookSignature, $keySecret);
+
+    if ($isValidSignature) {
+      // Signature is valid, proceed to save the webhook data to the database
+      // Here, you can parse $webhookBody (which is in JSON format) and save it to your database
+      $decodedData = json_decode($webhookBody, true);
+      $bool = saveWebhookTransaction($decodedData);
+    }
+    else {
+      // Signature is not valid, log the error
+      error_log("Invalid signature received");
+    }
+  }
+  //catch exception
+  catch(Exception $e) {
+    if($debug) { echo 'Message: ' .$e->getMessage(); }
+    else {
+      return "DB Error:: Could not Process Webhook data";
+    }
+    error_log($e->getMessage());
+  }
+  
+}
+
 if(isset($_REQUEST['check_subscription']) && !empty($_REQUEST['check_subscription'])) {
   $res = [];
   $res['status'] = false;
@@ -69,13 +127,48 @@ if(isset($_REQUEST['check_subscription']) && !empty($_REQUEST['check_subscriptio
 }
 
 if(isset($_REQUEST['webhook'])) {
-  global $db;
-  $tr_data = json_encode($_REQUEST);
-  // save data to db
-  $data = [
-    'tr_data' => $tr_data
-  ];
-  $sql = "INSERT INTO transactions (tr_data) VALUES (:tr_data)";
-  $db->prepare($sql)->execute($data);
+  echo createWebhookTransaction();
+}
 
+if(isset($_REQUEST['create_orderssssssssssssssssssss'])) {
+  try {
+    $userId   = $_REQUEST['user_id'];
+    $amount   = $_REQUEST['amount'];
+    $receipt  = generateReceiptId($userId);
+
+    $res = createRazorOrder($userId, $receipt, $amount);
+    // var_dump($res);
+    $response = new StdClass();
+    $response->status   = false;
+    $response->error    = ['could not create order'];
+    if(isset($res->error)) { 
+      echo json_encode($response); 
+      exit();
+    }
+    
+    unset($response->error);
+    $response->status           = true;
+    $response->pg_order_id      = $res->id;
+    $response->receipt          = $receipt;
+    $response->user_id          = $userId;
+    $response->order_date       = Date('Y-m-d H:i:s');
+    $response->order_status     = $res->status;
+    $response->order_notes      = $res;
+    $response->total_amount     = $res->amount;
+    $response->transaction_id   = '';
+    $response->billing_address  = '';
+
+    insertUserOrder($response);
+
+    echo json_encode($response);
+    exit();
+  }
+  //catch exception
+  catch(Exception $e) {
+    if($debug) { echo 'Message: ' .$e->getMessage(); }
+    else {
+      return "DB Error:: Could not create order";
+    }
+    error_log($e->getMessage());
+  } 
 }
