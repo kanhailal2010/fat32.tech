@@ -72,28 +72,17 @@ function createWebhookTransaction(){
   // Get the webhook body and signature
   $webhookBody      = file_get_contents('php://input'); // Request body sent by Razorpay
   $webhookSignature = $_SERVER['HTTP_X_RAZORPAY_SIGNATURE']; // Signature sent by Razorpay
-  $keySecret        = $_ENV['WEBHOOK_SECRET'];
 
-  saveWebhookTransaction(json_encode($_SERVER));
-  saveWebhookTransaction($webhookBody);
-  require_once(__DIR__.'/razorpay-php-2.8.7/Razorpay.php');
-  /* PHP SDK: https://github.com/razorpay/razorpay-php */
-  $api = new Razorpay\Api\Api($_ENV['KEY_ID'], $_ENV['KEY_SECRET']);
-
-    // Verify the webhook signature
-    $isValidSignature = $api->utility->verifyWebhookSignature($webhookBody, $webhookSignature, $keySecret);
-
+  $isValidSignature = verifySignature($webhookBody, $webhookSignature);
     if ($isValidSignature) {
       // Signature is valid, proceed to save the webhook data to the database
       // Here, you can parse $webhookBody (which is in JSON format) and save it to your database
-      $decodedData = json_decode($webhookBody, true);
-      $bool = saveWebhookTransaction($decodedData);
+      $bool = saveWebhookTransaction(json_decode($webhookBody));
     }
     else {
+      $bool = saveWebhookTransaction(json_decode($webhookBody));
       // Signature is not valid, log the error
-      error_log("Invalid signature received using Razorpay");
-      error_log(verifySignature($webhookBody, $webhookSignature));
-      error_log('the sign razorpay '.$_SERVER['HTTP_X_RAZORPAY_SIGNATURE']);
+      error_log("Invalid webhook signature received ");
     }
   }
   //catch exception
@@ -135,9 +124,12 @@ if(isset($_REQUEST['check_subscription']) && !empty($_REQUEST['check_subscriptio
   exit();
 }
 
+
+
 if(isset($_REQUEST['webhook'])) {
   echo createWebhookTransaction();
 }
+
 
 if(isset($_REQUEST['create_orderssssssssssssssssssss'])) {
   try {

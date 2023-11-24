@@ -152,12 +152,20 @@ function insertUserOrder($data) {
 
 function saveWebhookTransaction($data){
   global $db;
-  // $tr_data = json_encode($data);
-  $tr_data = $data;
   try {
-    $sql = "INSERT INTO transactions (tr_data) VALUES (:tr_data)";
+    $sql = "INSERT INTO order_transactions (id, order_id, payment_id, method, user_email, user_phone, payment_status, payment_amount, order_status, order_amount, transaction_data, created_at) VALUES (null, :order_id, :payment_id, :method, :user_email, :user_phone, :payment_status, :payment_amount, :order_status, :order_amount, :transaction_data, :created_at)";
     return $db->prepare($sql)->execute([
-      'tr_data' => $tr_data
+      'order_id'          => $data->payload->payment->entity->order_id,
+      'payment_id'        => $data->payload->payment->entity->id,
+      'method'            => $data->payload->payment->entity->method,
+      'user_email'        => $data->payload->payment->entity->email,
+      'user_phone'        => $data->payload->payment->entity->contact,
+      'payment_status'    => $data->payload->payment->entity->status,
+      'payment_amount'    => $data->payload->payment->entity->amount,
+      'order_status'      => $data->payload->order->entity->status,
+      'order_amount'      => $data->payload->order->entity->amount,
+      'transaction_data'  => json_encode($data),
+      'created_at'        => Date('Y-m-d H:i:s'),
     ]);
   }
   //catch exception
@@ -201,11 +209,6 @@ function saveWebhookTransaction($data){
 // update subscriptions set subscription_status = 'active' where user_id = 4;
 
 
-// CREATE TABLE transactions (
-//   id INT PRIMARY KEY AUTO_INCREMENT,
-//   tr_data TEXT
-// );
-
 // CREATE TABLE orders (
 //   id INT PRIMARY KEY AUTO_INCREMENT,
 //   receipt VARCHAR(50) NOT NULL,
@@ -220,3 +223,21 @@ function saveWebhookTransaction($data){
 // );
 
 // INSERT INTO orders VALUES (null,'fat_receipt', 'order_EKwxwAgItmmXdp', 4, '2023-11-21 15:20:21', 'created', '{"user_id": 4}', '118', 'csefo2e9Z19', 'Nagpur, 440001');
+
+
+// CREATE TABLE order_transactions (
+//   id INT PRIMARY KEY AUTO_INCREMENT,
+//   order_id VARCHAR(50) NOT NULL,
+//   payment_id VARCHAR(50),
+//   method VARCHAR(50),
+//   user_email VARCHAR(50),
+//   user_phone VARCHAR(16),
+//   payment_status VARCHAR(20),
+//   payment_amount INT(10) NOT NULL,
+//   order_status enum('created','attempted','paid') NOT NULL DEFAULT 'created',
+//   order_amount INT(10) NOT NULL,
+//   transaction_data JSON DEFAULT NULL,
+//   created_at DATETIME DEFAULT NULL
+// );
+
+// INSERT INTO order_transactions (id, order_id, payment_id, method, user_email, user_phone, payment_status, payment_amount, order_status, order_amount, transaction_data, created_at) VALUES (null, 'order_N4CvFaMWxOVtCF', 'pay_N4CvMnKey8Yv5R', 'upi', 'kanhailal2010@gmail.com', '9008654469', 'captured', 15354, 'paid', 15000, '{ "all" : { "transaction": "data"} }', '2023-11-24 16:10:45');
