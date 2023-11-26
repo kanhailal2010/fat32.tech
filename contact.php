@@ -1,9 +1,10 @@
 <?php
 header('Access-Control-Allow-Origin: https://fat32.tech');
 header('Access-Control-Allow-Methods: OPTIONS,POST');
+require_once(__DIR__.'/partials/par_util.php');
 
     // Only process POST reqeusts.
-    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    if ($_SERVER["REQUEST_METHOD"] == "POST" && verifyCaptcha()) {
         // Get the form fields and remove whitespace.
         $name = strip_tags(trim($_POST["name"]));
 				$name = str_replace(array("\r","\n"),array(" "," "),$name);

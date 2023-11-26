@@ -3250,3 +3250,17 @@ section#terms { margin-top:6%; padding-bottom: 100px; }
 section#terms p { margin:20px 0 ; }
 section#terms ul li { list-style-type:  disc;}
 .footer-links { margin: 0 30px;}
+
+/* google captcha logo position */
+ /* Move reCAPTCHA v3 badge to the left */
+ 
+ .grecaptcha-badge {
+  width: 70px !important;
+  overflow: hidden !important;
+  transition: all 0.3s ease !important;
+  left: 4px !important;
+}
+
+.grecaptcha-badge:hover {
+  width: 256px !important;
+}

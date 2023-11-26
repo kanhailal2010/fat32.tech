@@ -1,45 +1,3 @@
-<?php 
-require_once(__DIR__.'/partials/header.php');
-require_once(__DIR__.'/account/db.php');
-
-// if logged in already then redirect to subscription 
-if(isset($_SESSION['logged_in']) && $_SESSION['logged_in']) {
-  metaRedirectTo(SITE_URL."account");
-}
-
-$alertDisplay = 'none';
-$alertMsg     = '';
-$alertType    = '';
-
- if(isset($_POST['login'])){ 
-  $valid = validateAjaxData($_POST);
-  // var_dump($valid);
-  if($valid['status']) {
-    $email = $_POST['email'];
-    $pass = $_POST['password'];
-    // echo str_repeat('<br/>', 15);
-    $verified = verifyLogin($email, $pass);
-    // var_dump('cred ', $email, $pass);
-    // var_dump('After verify ',$verified);
-    $alertDisplay = 'block';
-    if($verified) {
-      $alertMsg               = 'Login Successful.. Redirecting to your dashboard';
-      $alertType              = 'success';
-      $_SESSION['logged_in']  = true;
-      $_SESSION['user_id']    = $verified['id'];
-      $_SESSION['user_email'] = $verified['email'];
-      $_SESSION['user_name']  = $verified['name'];
-      $_SESSION['user_photo'] = $verified['photo'];
-      metaRedirectTo(SITE_URL."account",0);
-    }
-    else {
-      $alertMsg               = 'Check your login credentials';
-      $alertType              = 'danger';
-    }
-  }
-}
-
-?>
 <section id="terms" class="features-area">
   <div class="container">
     <div class="row justify-content-center">
@@ -55,15 +13,15 @@ $alertType    = '';
         <div class="alert alert-<?php echo $alertType;?>" role="alert" style="display:<?php echo $alertDisplay;?>">
           <?php echo $alertMsg; ?>
         </div>
-          <div class="contact-wrapper form-style-two pt-115">
+          <div class="contact-wrapper form-style-two pt-50">
               <h4 class="contact-title pb-10"><i class="lni lni-envelope"></i> Enter your <span>Login Credentials.</span></h4>
-              <form id="login-form" action="<?php echo SITE_URL; ?>login.php" method="post">
+              <form id="login-form" class="js-form form-has-loaded" action="<?php echo SITE_URL; ?>login/" method="post">
                   <div class="row">
                       <div class="col-md-6">
                           <div class="form-input mt-25">
                               <label>Email</label>
                               <div class="input-items default">
-                                <i class="lni lni-user"></i>
+                                <i class="lni lni-envelope"></i>
                                 <input type="email" name="email" placeholder="Email">
                               </div>
                             </div> <!-- form input -->
@@ -72,7 +30,7 @@ $alertType    = '';
                             <div class="form-input mt-25">
                               <label>Password</label>
                               <div class="input-items default">
-                                <i class="lni lni-star"></i>
+                                <i class="lni lni-lock-alt"></i>
                                 <input name="password" type="password" placeholder="Password">
                               </div>
                           </div> <!-- form input -->
@@ -80,7 +38,11 @@ $alertType    = '';
                       <p class="form-message"></p>
                       <div class="col-md-12">
                           <div class="form-input light-rounded-buttons mt-30">
-                              <button name="login" class="main-btn light-rounded-two float-right">Login</button>
+                            <a href="/login/signup" class="main-btn float-left">Sign UP</a>
+                            <a href="/login/forgot" class="login_forgot_link">Forgot Password?</a>
+
+                            <input type="hidden" name="recaptcha_response" id="recaptchaResponse">
+                            <button name="login" class="main-btn light-rounded-two float-right submit-btn">Login</button>
                           </div> <!-- form input -->
                       </div>
                   </div> <!-- row -->
@@ -106,7 +68,3 @@ $alertType    = '';
   </div> <!-- row -->
   </div>  <!-- container -->
 </section>
-  <style>
-    .navbar-area { background: #0166F3; }
-  </style>
-  <?php include('partials/footer.php');?>

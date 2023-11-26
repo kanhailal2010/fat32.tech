@@ -1,4 +1,3 @@
-<?php include('partials/header.php');?>
 <section id="terms" class="features-area">
   <div class="container">
     <div class="row justify-content-center">
@@ -47,4 +46,3 @@
   <style>
     .navbar-area { background: #0166F3; }
   </style>
-  <?php include('partials/footer.php');?>

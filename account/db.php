@@ -1,21 +1,8 @@
 <?php 
-
-require_once(__DIR__.'/../partials/par_util.php');
-
 $servername = $_ENV['DB_HOST'];
 $username = $_ENV['DB_USER'];
 $password = $_ENV['DB_PASS'];
 $database = $_ENV['DB_NAME'];
-
-
-// // Create connection
-// $conn = mysqli_connect($servername, $username, $password, $database);
-
-// // Check connection
-// if (!$conn) {
-//   die("Mysql Connection failed: " . mysqli_connect_error());
-// }
-// echo "Mysql Connected successfully";
 
 try {
   $db = new PDO("mysql:host=$servername;dbname=$database", $username, $password);
@@ -26,47 +13,123 @@ try {
   echo "DB Connection failed: " . $e->getMessage();
 }
 
-function createUser($name, $email, $password, $phone, $photo, $google_id=''){
+function addUnverifiedUser($user){
+  $user->active = 0;
+  $user->email_verified = 0;
+  $res = createUser($user);
+  if(!$res && getUserByEmail($user->email)) {
+    return [false, 'User already registered'];
+  }
+  else if(!$res) {
+    return [false, 'Could not add user'];
+  }
+  return [true, 'User added successfully'];
+}
+
+function addVerifiedUser($user){
+  $user->active = 1;
+  $user->email_verified = 1;
+  return createUser($user);
+}
+
+function createVerifiedUserIfDoesNotExist($user){
+  $user = getUserByEmail($user->email);
+  if(!$user) {
+    $res = addVerifiedUser($user);
+    if(!$res) { return [false, 'Could not add user']; }    
+    exit();
+  }
+  return [true, 'User already exist'];
+}
+
+function createUser($user){
   global $db,$debug;
+  // echo str_repeat('<br/>', 15);
+  // echo '<pre> db '.print_r($user,true).'</pre>';
   try {
-    $query = $db->prepare('INSERT INTO users (id, name, email, password, phone, photo, google_id) VALUES (:id, :name, :email, :pass, :phone, :photo, :gid)');
+    $query = $db->prepare("INSERT INTO users (id, active, fullname, email, email_verified, verification_code, user_pass, phone, photo, google_id) VALUES (:id, :active, :fullname, :email, :email_verified, :verification_code, :pass, :phone, :photo, :gid)");
     return $query->execute([
       'id' => null,
-      'name' => $name,
-      'email' => $email,
-      'pass' => password_hash($password, PASSWORD_DEFAULT),
-      'phone' => $phone,
-      'photo' => $photo,
-      'gid' => $google_id,
+      'active' => $user->active,
+      'fullname' => $user->name,
+      'email' => $user->email,
+      'email_verified' => $user->email_verified,
+      'verification_code' => $user->verification_code,
+      'pass' => password_hash($user->password, PASSWORD_DEFAULT),
+      'phone' => $user->phone,
+      'photo' => isset($user->photo) ? $user->photo : '',
+      'gid' => isset($user->google_id) ? $user->google_id : '',
     ]);
   }
   //catch exception
   catch(Exception $e) {
+    error_log($e->getMessage());
     if($debug) { echo 'Message: ' .$e->getMessage(); }
     else {
-      return "DB Error:: Could not save user";
+      return false;
     }
+  }
+}
+
+function getUserByEmail($email){
+  global $db, $debug;
+
+  // Prepare and execute the SQL query
+  $stmt = $db->prepare("SELECT * FROM users WHERE email = :email");
+  $stmt->bindParam(':email', $email);
+  if($stmt->execute()) {
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+  }
+  else {
+    return false;
+  }
+}
+
+function passwordResetLinkValid($email, $code){
+  global $db, $debug;
+  $user = getUserByEmail($email);
+  // return false when user is not found or when codes do not match
+  if(!$user || $user['verification_code'] != $code){ 
+    return [false, 'Something failed. Please Try again'];
+  }
+  elseif ($user && $user['verification_code'] == $code) {
+    return [true, 'reset codes matching'];
+  }
+}
+
+function updateVerificationCode($email, $random) {
+  global $db, $debug;
+  // Prepare and execute the SQL query
+  try {
+    $stmt = $db->prepare("UPDATE users SET verification_code=:randomtxt WHERE email = :email");
+    $stmt->bindParam(':email', $email);
+    $stmt->bindParam(':randomtxt', $random);
+    if ($stmt->execute()) {
+      return [true, 'Successfully updated verification code for '.$email];
+    }
+  }
+  //catch exception
+  catch(Exception $e) {
     error_log($e->getMessage());
+    if($debug) { echo 'Message: ' .$e->getMessage(); }
+    else {
+      return [false, 'Could not update verification code for email '.$email];
+    }
   }
 }
 
 function verifyLogin($email, $password) {
   global $db, $debug;
 
-  // Prepare and execute the SQL query
-  $stmt = $db->prepare("SELECT * FROM users WHERE email = :email");
-  $stmt->bindParam(':email', $email);
-  $stmt->execute();
-
   // Fetch the user data
-  $user = $stmt->fetch(PDO::FETCH_ASSOC);
+  $user = getUserByEmail($email);
   // var_dump($password, $user['password']);
   // password_hash('$ecret(@55',PASSWORD_DEFAULT);
   
   // password_hash('kanhai@341ET',PASSWORD_BCRYPT);
   if ($user) {
       // Verify the password
-      if (password_verify($password, $user['password'])) {
+      if (password_verify($password, $user['user_pass'])) {
           // Password is correct, user is authenticated
           // echo "Login successful!";
           return $user;
@@ -83,10 +146,40 @@ function verifyLogin($email, $password) {
   }
 }
 
+function activateUser($email,$code){
+  global $db, $debug;
+  try {
+    $user = getUserByEmail($email);
+    if(!$user) { return [false, 'User not registered.'];}
+// print_r($user);
+    // user registered and code is same then activate user and set mail verified
+    if($user['verification_code'] == $code) {
+      $query = $db->prepare("UPDATE users SET active=:active, email_verified=:email_verified WHERE email=:email");
+      $res = $query->execute([
+        'active' => 1,
+        'email_verified' => 1,
+        'email' => $email
+      ]);
+      return [true, 'User Activated'];
+    }
+    else {
+      return [false, 'Activation code does not match'];
+    }
+  }
+  //catch exception
+  catch(Exception $e) {
+    error_log($e->getMessage());
+    if($debug) { echo 'Message: ' .$e->getMessage(); }
+    else {
+      return [false, 'Could not activate user. Please try again'];
+    }
+  }
+}
+
 function changePassword($email, $password) {
   global $db, $debug;
   try {
-    $query = $db->prepare("UPDATE users SET password=:pass WHERE email=:email");
+    $query = $db->prepare("UPDATE users SET user_pass=:pass WHERE email=:email");
     return $query->execute([
       'email' => $email,
       'pass' => password_hash($password, PASSWORD_DEFAULT)
@@ -94,11 +187,11 @@ function changePassword($email, $password) {
   }
   //catch exception
   catch(Exception $e) {
+    error_log($e->getMessage());
     if($debug) { echo 'Message: ' .$e->getMessage(); }
     else {
       return "DB Error:: Could not change password";
     }
-    error_log($e->getMessage());
   }
 }
 
@@ -142,11 +235,11 @@ function insertUserOrder($data) {
   }
   //catch exception
   catch(Exception $e) {
+    error_log($e->getMessage());
     if($debug) { echo 'Message: ' .$e->getMessage(); }
     else {
       return "DB Error:: Could not Insert Order";
     }
-    error_log($e->getMessage());
   } 
 }
 
@@ -171,17 +264,21 @@ function saveWebhookTransaction($data){
   }
   //catch exception
   catch(Exception $e) {
+    error_log($e->getMessage());
     if($debug) { echo 'Message: ' .$e->getMessage(); }
     else {
       return "DB Error:: Could not Insert Webhook data";
     }
-    error_log($e->getMessage());
   } 
 }
+
 // CREATE TABLE `users` (
 //   `id` int NOT NULL AUTO_INCREMENT,
+//   `active` boolean NOT NULL DEFAULT FALSE,
 //   `name` varchar(255) NOT NULL,
 //   `email` varchar(255) NOT NULL,
+//   `email_verifed` boolean NOT NULL DEFAULT FALSE,
+//   `verification_code` VARCHAR(30) NULL DEFAULT NULL,
 //   `password` varchar(255) DEFAULT NULL,
 //   `phone` varchar(20) NOT NULL,
 //   `photo` varchar(255) DEFAULT NULL,
@@ -189,7 +286,7 @@ function saveWebhookTransaction($data){
 //   PRIMARY KEY (`id`),
 //   UNIQUE KEY `email` (`email`)
 // )
-// insert into users VALUES (null, 'Kanhai', 'kanhailal2010@gmail.com', 'password_not_set', 9008654469, '', '');
+// insert into users VALUES (null, 1, 'Kanhai', 'kanhailal2010+test@gmail.com', 1, null, 'password_not_set', 9008654469, '', '');
 // select * from users where email = 'kanhailal2010@gmail.com';
 
 // CREATE TABLE `subscriptions` (

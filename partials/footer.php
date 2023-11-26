@@ -71,36 +71,11 @@
 
     <!--====== PART ENDS ======-->
 
+    <script>
+        let site_url = '<?php echo SITE_URL; ?>';
+    </script>
 
-
-
-    <!--====== Jquery js ======-->
-    <script src="<?php echo siteUrl('assets/js/vendor/jquery-1.12.4.min.js');?>"></script>
-    <script src="<?php echo siteUrl('assets/js/vendor/modernizr-3.7.1.min.js');?>"></script>
-    
-    <!--====== Bootstrap js ======-->
-    <script src="<?php echo siteUrl('assets/js/popper.min.js');?>"></script>
-    <script src="<?php echo siteUrl('assets/js/bootstrap.min.js');?>"></script>
-    
-    <!--====== Slick js ======-->
-    <script src="<?php echo siteUrl('assets/js/slick.min.js');?>"></script>
-    
-    <!--====== Magnific Popup js ======-->
-    <script src="<?php echo siteUrl('assets/js/jquery.magnific-popup.min.js');?>"></script>
-    
-    <!--====== Ajax Contact js ======-->
-    <script src="<?php echo siteUrl('assets/js/ajax-contact.js');?>"></script>
-    
-    <!--====== Isotope js ======-->
-    <script src="<?php echo siteUrl('assets/js/imagesloaded.pkgd.min.js');?>"></script>
-    <script src="<?php echo siteUrl('assets/js/isotope.pkgd.min.js');?>"></script>
-    
-    <!--====== Scrolling Nav js ======-->
-    <script src="<?php echo siteUrl('assets/js/jquery.easing.min.js');?>"></script>
-    <script src="<?php echo siteUrl('assets/js/scrolling-nav.js');?>"></script>
-    
-    <!--====== Main js ======-->
-    <script src="<?php echo siteUrl('assets/js/main.js');?>"></script>
+    <?php  echo includeJS(); ?>
     
 </body>
 

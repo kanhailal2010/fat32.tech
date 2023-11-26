@@ -1,7 +1,12 @@
+
+
 <IfModule mod_rewrite.c>    
-  RewriteEngine On
-  RewriteBase /
-  
+RewriteEngine On
+RewriteBase /
+
+  # ErrorDocument 404 http://fat32.com/404.html
+  # ErrorDocument 500 http://fat32.com/500.html
+  DirectoryIndex index.php
   <IfModule mod_negotiation.c>
       Options -MultiViews
   </IfModule>
@@ -9,11 +14,12 @@
   # Handle URLs within the 'account' folder
   RewriteCond %{REQUEST_FILENAME} !-d
   RewriteCond %{REQUEST_FILENAME}.php -f
-  RewriteRule ^account/([^/]+)/?$ account/$1.php [L]
+  RewriteRule ^([^/]+)/([^/]+)/?$ $1/$2.php [L]
+  RewriteRule ^login/([^/]+)/?$ login/index.php?page=$1 [L,QSA]
 
   # Remove .php extension from URLs
   RewriteCond %{REQUEST_FILENAME} !-d
   RewriteCond %{REQUEST_FILENAME}.php -f
-  RewriteRule ^([^/]+)/?$ $1.php [L]
-
+  RewriteRule ^([^/]+)/?$ index.php?page=$1 [L,QSA]
+  
 </IfModule>

@@ -1,4 +1,3 @@
-<?php include('partials/par_util.php'); ?>
 <!doctype html>
 <html class="no-js" lang="en">
 
@@ -23,23 +22,7 @@
     <meta name="msapplication-config" content="<?php echo siteUrl('/assets/images/favicon/browserconfig.xml'); ?>">
     <meta name="theme-color" content="#ffffff">
         
-    <!--====== Magnific Popup CSS ======-->
-    <link rel="stylesheet" href="<?php echo siteUrl('assets/css/magnific-popup.css');?>">
-        
-    <!--====== Slick CSS ======-->
-    <link rel="stylesheet" href="<?php echo siteUrl('assets/css/slick.css');?>">
-        
-    <!--====== Line Icons CSS ======-->
-    <link rel="stylesheet" href="<?php echo siteUrl('assets/css/LineIcons.css');?>">
-        
-    <!--====== Bootstrap CSS ======-->
-    <link rel="stylesheet" href="<?php echo siteUrl('assets/css/bootstrap.min.css');?>">
-    
-    <!--====== Default CSS ======-->
-    <link rel="stylesheet" href="<?php echo siteUrl('assets/css/default.css');?>">
-    
-    <!--====== Style CSS ======-->
-    <link rel="stylesheet" href="<?php echo siteUrl('assets/css/style.css');?>">
+    <?php echo includeCSS(); ?>
     
 </head>
 

@@ -15,10 +15,10 @@ $(function() {
         var scroll = $(window).scrollTop();
         if (scroll < 20) {
             $(".navbar-area").removeClass("sticky");
-            $(".navbar-area img").attr("src", "assets/images/fat32-logo.png");
+            $(".navbar-area img").attr("src", `${site_url}assets/images/fat32-logo.png`);
         } else {
             $(".navbar-area").addClass("sticky");
-            $(".navbar-area img").attr("src", "assets/images/fat32-logo-small.png");
+            $(".navbar-area img").attr("src", `${site_url}assets/images/fat32-logo-small.png`);
         }
     });
 
@@ -32,7 +32,7 @@ $(function() {
 
         scrollLink.each(function () {
 
-            var sectionOffset = $(this.hash).offset().top - 73;
+            var sectionOffset = $(this.hash).offset() ? $(this.hash).offset().top - 73 : 0;
 
             if (sectionOffset <= scrollbarLocation) {
                 $(this).parent().addClass('active');

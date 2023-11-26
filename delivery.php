@@ -1,4 +1,8 @@
-<?php include('partials/header.php');?>
+<?php 
+require_once(__DIR__.'/partials/par_util.php');
+// require_once(__DIR__.'/account/db.php');
+require_once(__DIR__.'/partials/header.php');
+?>
 <section id="terms" class="features-area">
   <div class="container">
     <div class="row justify-content-center">

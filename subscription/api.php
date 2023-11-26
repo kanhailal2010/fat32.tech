@@ -48,7 +48,7 @@ function razorpayAmount($rupees) {
    return $paise;
 }
 
-function createRazorOrder($userId, $receipt, $amount){
+function createRazorOrder($userId, $receipt, $amount, $notes){
   require_once(__DIR__.'/razorpay-php-2.8.7/Razorpay.php');
   
   $api = new Razorpay\Api\Api($_ENV['KEY_ID'], $_ENV['KEY_SECRET']);
@@ -56,9 +56,7 @@ function createRazorOrder($userId, $receipt, $amount){
     'receipt'         => $receipt,
     'amount'          => razorpayAmount($amount), // amount in the smallest currency unit
     'currency'        => 'INR',// <a href="/docs/payments/payments/international-payments/#supported-currencies" target="_blank">See the list of supported currencies</a>.)
-    'notes'           => [
-      'user_id'    => $userId
-      ]
+    'notes'           => $notes
     ]);
   }
 
@@ -131,16 +129,26 @@ if(isset($_REQUEST['webhook'])) {
 }
 
 
-if(isset($_REQUEST['create_orderssssssssssssssssssss'])) {
+if(isset($_REQUEST['create_order'])) {
+  $response = new StdClass();
+  $response->status   = false;
+  $plans = ['monthly', 'half-yearly', 'yearly'];
+  if(!isset($_REQUEST['subscription_plan']) || !in_array($_REQUEST['subscription_plan'], $plans)) {
+    $response->msg = "Invalid subscription plan";
+    echo json_encode($response);
+    exit();
+  }
+  
   try {
     $userId   = $_REQUEST['user_id'];
     $amount   = $_REQUEST['amount'];
     $receipt  = generateReceiptId($userId);
-
-    $res = createRazorOrder($userId, $receipt, $amount);
+    $notes    = [
+      'user_id'   => $userId,
+      'plan'      =>  
+    ];
+    $res = createRazorOrder($userId, $receipt, $amount, $notes);
     // var_dump($res);
-    $response = new StdClass();
-    $response->status   = false;
     $response->error    = ['could not create order'];
     if(isset($res->error)) { 
       echo json_encode($response); 
@@ -166,11 +174,13 @@ if(isset($_REQUEST['create_orderssssssssssssssssssss'])) {
   }
   //catch exception
   catch(Exception $e) {
+    error_log($e->getMessage());
     if($debug) { echo 'Message: ' .$e->getMessage(); }
     else {
-      return "DB Error:: Could not create order";
+      $response->error = "DB Error:: Could not create order";
+      echo json_encode($response);
+      exit();
     }
-    error_log($e->getMessage());
   } 
 }
 
