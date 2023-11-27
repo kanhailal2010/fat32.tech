@@ -55,12 +55,22 @@
             <div class="row">
                 <div class="col-lg-12">
                     <div class="row justify-content-center">
-                      <div class="footer-links">
+                      <div class="col-md-6 footer-links">
                         <?php echo googleLoginButton('Login with Google'); ?>
+                        <button id="fb_login" class="btn btn-md btn-primary"><i class='lni lni-facebook'></i> &nbsp; Login with Facebook</button>
                       </div>
                     </div> <!-- row -->
                 </div>
-            </div>
+            </div><!-- row -->
+
+            <div class="row">
+                <div class="col-lg-12">
+                  <div id="fb-root"></div>
+                  <!-- script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v18.0&appId=320256154191505" nonce="zrRUa4D1"></script -->
+                  <div class="fb-login-button" data-width="" data-size="" data-button-type="" data-layout="" data-auto-logout-link="true" data-use-continue-as="false"></div>
+                  <div id="status">FB Status</div>
+                </div>
+            </div><!-- row -->
 
           </div> <!-- contact wrapper form -->
       </div>

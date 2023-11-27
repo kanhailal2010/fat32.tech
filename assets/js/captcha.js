@@ -3,7 +3,7 @@ function onSubmit(token) {
 }
 // for signup form
 grecaptcha.ready(() => {
-  grecaptcha.execute(google_captcha_site_key, { action: 'signup' }).then(token => {
+  grecaptcha.execute(GOOGLE_CAPTCHA_SITE_KEY, { action: 'signup' }).then(token => {
     document.querySelector('#recaptchaResponse').value = token;
   });
 });

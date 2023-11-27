@@ -54,7 +54,7 @@ function includeCSS(){
 
 $globalJs = isset($globalJs) ? $globalJs : [];
 function includeJS(){
-  global $globalJs;
+  global $globalJs, $globalJsAttr;
   
   $jsArray = [
     'Jquery js' => siteUrl('assets/js/vendor/jquery-1.12.4.min.js'),
@@ -75,8 +75,9 @@ function includeJS(){
   
   $html = '';
   foreach($jsArray as $label => $url) {
+    $attr = isset($globalJsAttr[$label]) ? $globalJsAttr[$label] : '';
     $html .= '<!--====== '.$label.' ======-->'."\n";
-    $html .= '<script src="'.$url.'"></script>'."\n";   
+    $html .= '<script '.$attr.' src="'.$url.'"></script>'."\n";   
   }
   return $html;
 }
