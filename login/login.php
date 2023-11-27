@@ -57,7 +57,9 @@
                     <div class="row justify-content-center">
                       <div class="col-md-6 footer-links">
                         <?php echo googleLoginButton('Login with Google'); ?>
-                        <button id="fb_login" class="btn btn-md btn-primary"><i class='lni lni-facebook'></i> &nbsp; Login with Facebook</button>
+                        <?php echo facebookLoginButton('Login with Facebook php'); ?>
+
+                        <button id="fb_login" class="btn btn-md btn-primary"><i class='lni lni-facebook'></i> &nbsp; Login with Facebook js</button>
                       </div>
                     </div> <!-- row -->
                 </div>

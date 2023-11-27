@@ -157,6 +157,27 @@ function googleLoginButton($buttonTitle=''){
   }
 }
 
+function facebookLoginButton($buttonTitle = 'Login with Facebook'){
+  try {
+    include_once(__DIR__.'/../login/fblogin/fb-config.php');
+    if(isset($_SESSION['fbUserId']) and $_SESSION['fbUserId']!=""){
+      echo 'logged in now redirectd';
+      // header('location: https://learncodeweb.com/demo/php/login-with-facebook-using-php-sdk/welcome.php');
+      exit;
+    }
+    $permissions = array('email'); // Optional permissions
+    $loginUrl = $helper->getLoginUrl('http://fat32.com/login/fblogin/fb-callback.php', $permissions);
+    return "<a class='btn btn-md btn-primary' href='".$loginUrl."'><i class='lni lni-facebook'></i> &nbsp; {$buttonTitle} </a>";
+  }
+  catch(Exception $e) {
+    if(debug()) { echo 'Message: ' .$e->getMessage(); }
+    else {
+      return "Error:: Could not authenticate Facebook user";
+    }
+    error_log('FACEBOOK_authentication_error:: '.$e->getMessage());
+  }
+}
+
 function validateAjaxData($data) {
   $errors = [];
 
