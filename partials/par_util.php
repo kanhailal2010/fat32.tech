@@ -131,18 +131,23 @@ function googleLoginButton($buttonTitle=''){
       $_SESSION['user_name'] = $google_user->name;
       $_SESSION['user_photo'] = $google_user->picture;
 
-      $google_user->pass = generateRandomAlphanumericText();
-      $google_user->phone = '0000000000';
-      $google_user->email_verified = 1;
-      $google_user->verification_code = null;
-      $google_user->active = 1;
-      $res = createVerifiedUserIfDoesNotExist($google_user);
+      $user = new StdClass();
+      $user->id               = $google_user->id;
+      $user->email            = $google_user->email;
+      $user->name             = $google_user->name;
+      $user->picture          = $google_user->picture;
+      $user->pass             = generateRandomAlphanumericText();
+      $user->phone            = '0000000000';
+      $user->email_verified   = 1;
+      $user->verification_code= null;
+      $user->active           = 1;
+      $res = createVerifiedUserIfDoesNotExist($user);
       if($res[0]) { metaRedirectTo(SITE_URL."account"); }
-      // print "id:				".$google_user->id."\n";
-      // //print '<img src="'.$google_user->picture.'" style="float: right;margin-top: 33px;" />'."\n\n";
-      // print "email:			".$google_user->email."\n";
-      // print "full-name:		".$google_user->name."\n";
-      //print "verified-email:	".$google_user->verifiedEmail."\n";	// just interesting if != "1"
+      // print "id:				".$user->id."\n";
+      // //print '<img src="'.$user->picture.'" style="float: right;margin-top: 33px;" />'."\n\n";
+      // print "email:			".$user->email."\n";
+      // print "full-name:		".$user->name."\n";
+      //print "verified-email:	".$user->verifiedEmail."\n";	// just interesting if != "1"
 
     } else {
       return "<a class='btn btn-md btn-primary' href='".$client->createAuthUrl()."'><i class='lni lni-google'></i> &nbsp; {$buttonTitle} </a>";

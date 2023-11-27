@@ -1,6 +1,9 @@
 // ====================================================
 // ================================== FB Login Script
 // ====================================================
+// https://developers.facebook.com/docs/javascript/reference/FB.api
+// https://developers.facebook.com/docs/graph-api/reference/user
+
   // function statusChangeCallback(response) {  // Called with the results from FB.getLoginStatus().
   //   console.log('FB statusChangeCallback');
   //   console.log(response);                   // The current login status of the person.

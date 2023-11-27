@@ -33,8 +33,8 @@ function addVerifiedUser($user){
 }
 
 function createVerifiedUserIfDoesNotExist($user){
-  $user = getUserByEmail($user->email);
-  if(!$user) {
+  $userOld = getUserByEmail($user->email);
+  if(!$userOld) {
     $res = addVerifiedUser($user);
     if(!$res) { return [false, 'Could not add user']; }    
     exit();
