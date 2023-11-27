@@ -14,7 +14,7 @@
           <?php echo $alertMsg; ?>
         </div>
           <div class="contact-wrapper form-style-two pt-50">
-              <h4 class="contact-title pb-10"><i class="lni lni-envelope"></i> Enter your <span>Login Credentials.</span></h4>
+              <h4 class="contact-title pb-10"><i class="lni lni-envelope"></i><span>Enter your</span> Login Credentials.</h4>
               <form id="login-form" class="js-form form-has-loaded" action="<?php echo SITE_URL; ?>login/" method="post">
                   <div class="row">
                       <div class="col-md-6">

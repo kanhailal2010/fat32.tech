@@ -1,7 +1,3 @@
-<?php 
-require_once(__DIR__.'/header.php'); 
-require_once(__DIR__.'/db.php'); 
-?>
 <?php // change passowrd logic here 
 $alertDisplay = 'none';
 $alertMsg     = '';
@@ -22,46 +18,35 @@ if(isset($_POST['change_password'])) {
 
 }
 ?>
-        <!-- Content Wrapper -->
-        <div id="content-wrapper" class="d-flex flex-column">
 
-            <!-- Main Content -->
-            <div id="content">
+<!-- Begin Page Content -->
+<div class="container-fluid">
 
-                <?php include_once('topbar_menu.php');?>
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Change Password</h1>
+    </div>
 
-                <!-- Begin Page Content -->
-                <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="alert alert-<?php echo $alertType;?>" role="alert" style="display:<?php echo $alertDisplay;?>">
+          <?php echo $alertMsg; ?>
+        </div>
 
-                    <!-- Page Heading -->
-                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                        <h1 class="h3 mb-0 text-gray-800">Change Password</h1>
-                    </div>
+      <form method="post">
+        <div class="form-group">
+          <label for="pass1">Password</label>
+          <input type="text" required="true" name="password" class="form-control" id="pass1" placeholder="Password">
+        </div>
+        <div class="form-group">
+          <label for="pass2">Confirm Password</label>
+          <input type="password" required="true" name="password2" class="form-control" id="pass2" placeholder="Confirm Password">
+        </div>
+        <button type="submit" name="change_password" class="btn btn-primary">Submit</button>
+      </form>
 
-                    <div class="row">
-                      <div class="col-md-12">
-                        <div class="alert alert-<?php echo $alertType;?>" role="alert" style="display:<?php echo $alertDisplay;?>">
-                          <?php echo $alertMsg; ?>
-                        </div>
-
-                      <form method="post">
-                        <div class="form-group">
-                          <label for="pass1">Password</label>
-                          <input type="text" required="true" name="password" class="form-control" id="pass1" placeholder="Password">
-                        </div>
-                        <div class="form-group">
-                          <label for="pass2">Confirm Password</label>
-                          <input type="password" required="true" name="password2" class="form-control" id="pass2" placeholder="Confirm Password">
-                        </div>
-                        <button type="submit" name="change_password" class="btn btn-primary">Submit</button>
-                      </form>
-
-                      </div>
-                    </div> <!-- row -->
-                    
-                </div>
-                <!-- /.container-fluid -->
-
-            </div>
-            <!-- End of Main Content -->
-<?php include_once('footer.php');?>
+      </div>
+    </div> <!-- row -->
+    
+</div>
+<!-- /.container-fluid -->

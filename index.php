@@ -4,7 +4,8 @@ require_once(__DIR__.'/partials/header.php');
 
 
 // load pages 
-$page = (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] != 'index.php') ? $_GET['page'] : 'home';
+$defaultPage = 'home';
+$page = (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] != 'index.php') ? $_GET['page'] : $defaultPage;
 // echo 'load the page now '.$page;
 require_once(__DIR__.'/'.$page.'.php');
 

@@ -54,7 +54,7 @@ if(isset($_POST['signup']) && verifyCaptcha()) {
           <?php echo $alertMsg; ?>
         </div>
           <div class="contact-wrapper form-style-two pt-50">
-              <h4 class="contact-title pb-10"><i class="lni lni-envelope"></i> Enter your <span> info.</span></h4>
+              <h4 class="contact-title pb-10"><i class="lni lni-envelope"></i><span> Create your</span> account. </h4>
               <form id="captcha-form" class="js-form form-has-loaded" action="<?php echo SITE_URL; ?>login/signup" method="post">
                 <div class="row">
                   <div class="col-md-6">

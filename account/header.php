@@ -1,4 +1,3 @@
-<?php require_once(__DIR__.'/ac_util.php'); ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -77,3 +76,11 @@
 
         </ul>
         <!-- End of Sidebar -->
+
+    <!-- Content Wrapper -->
+    <div id="content-wrapper" class="d-flex flex-column">
+
+    <!-- Main Content -->
+    <div id="content">
+
+        <?php include_once('topbar_menu.php');?>

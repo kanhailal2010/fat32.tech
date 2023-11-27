@@ -2,11 +2,10 @@
 // TODO: 
 // password strenght is not being checked on password reset flow
 
-$showResetFields = false;
-
-$alertDisplay = 'none';
-$alertMsg     = '';
-$alertType    = '';
+$showResetFields  = false;
+$alertDisplay     = 'none';
+$alertMsg         = '';
+$alertType        = '';
 
 // echo str_repeat('<br/>',15);
 // echo '<pre>'.print_r($_REQUEST,true).'</pre>';
@@ -79,6 +78,7 @@ if(isset($_POST['recover_password']) && verifyCaptcha()) {
     }
   endif;
 }
+$submitText = $showResetFields ? 'Reset Password' : 'Recover Password';
 ?>
 <section id="terms" class="features-area">
   <div class="container">
@@ -133,7 +133,9 @@ if(isset($_POST['recover_password']) && verifyCaptcha()) {
                     <div class="form-input light-rounded-buttons mt-30 text-center">
                           <input type="hidden" name="recover_password" placeholder="hidden recover password">
                           <input type="hidden" name="recaptcha_response" id="recaptchaResponse">
-                          <button type="submit" name="recover" class="main-btn light-rounded-two submit-btn" value="password">Recover Password</button>
+                          <button type="submit" name="recover" class="main-btn light-rounded-two submit-btn" value="password">
+                          <?php echo $submitText; ?>
+                          </button>
                           <br/>
                           <a href="/login/" class="main-btn login_forgot_link">Back to Login</a>
                         </div> <!-- form input -->
