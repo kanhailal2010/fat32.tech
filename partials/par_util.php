@@ -93,7 +93,7 @@ function generateRandomAlphanumericText() {
   return $randomString;
 }
 
-function googleLoginButton(){
+function googleLoginButton($buttonTitle=''){
   try {    
     // init configuration
     $clientID = $_ENV['GOOGLE_CLIENT_ID'];
@@ -144,7 +144,7 @@ function googleLoginButton(){
       //print "verified-email:	".$google_user->verifiedEmail."\n";	// just interesting if != "1"
 
     } else {
-      return "<a class='btn btn-md btn-primary' href='".$client->createAuthUrl()."'><i class='lni lni-google'></i> Login with Google</a>";
+      return "<a class='btn btn-md btn-primary' href='".$client->createAuthUrl()."'><i class='lni lni-google'></i> &nbsp; {$buttonTitle} </a>";
     }
   }
   catch(Exception $e) {

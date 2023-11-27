@@ -125,7 +125,7 @@ if(isset($_POST['signup']) && verifyCaptcha()) {
                 <div class="col-lg-12">
                     <div class="row justify-content-center">
                       <div class="footer-links">
-                        <?php echo googleLoginButton(); ?>
+                        <?php echo googleLoginButton('Login with Google'); ?>
                       </div>
                     </div> <!-- row -->
                 </div>
