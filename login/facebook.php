@@ -49,12 +49,18 @@ $fbUser	=	$res->getDecodedBody();
 $resImg		=	$fb->get('/me/picture?type=large&amp;amp;redirect=false',$accessToken->getValue());
 $picture	=	$resImg->getGraphObject();
 
+$_SESSION['logged_in'] = true;
+$_SESSION['user_id'] = $fbUser['id'];
+$_SESSION['user_email'] = '';
+$_SESSION['user_name'] = $fbUser['name'];
+$_SESSION['user_photo'] = '';
 
 // $_SESSION['fbUserId']		=	$fbUser['id'];
 // $_SESSION['fbUserName']		=	$fbUser['name'];
 // $_SESSION['fbAccessToken']	=	$accessToken->getValue();
 
-echo "login successfull";
+// echo "login successfull";
+redirectTo('account');
 // header('Location: welcome.php');
 exit;
 ?>

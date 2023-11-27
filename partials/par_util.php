@@ -163,12 +163,11 @@ function facebookLoginButton($buttonTitle = 'Login with Facebook'){
     if(isset($_SESSION['logged_in']) and $_SESSION['user_email']!=""){
       echo 'logged in now redirect to account';
       redirectTo('account');
-      // header('location: https://learncodeweb.com/demo/php/login-with-facebook-using-php-sdk/welcome.php');
       exit;
     }
-    $permissions = array('name','email','picture'); // Optional permissions
-    $loginUrl = $helper->getLoginUrl(siteUrl('login/'), $permissions);
-    return "<a class='btn btn-md btn-primary' href='".$loginUrl."'><i class='lni lni-facebook'></i> &nbsp; {$buttonTitle} </a>";
+    $permissions = array('email'); // Optional permissions
+    $loginUrl = $helper->getLoginUrl(siteUrl('login/facebook.php'), $permissions);
+    return "<a class='btn btn-md btn-primary' href='".$loginUrl."' ><i class='lni lni-facebook'></i> &nbsp; {$buttonTitle} </a>";
   }
   catch(Exception $e) {
     if(debug()) { echo 'Message: ' .$e->getMessage(); }
