@@ -128,13 +128,13 @@ function googleLoginButton($buttonTitle=''){
       $_SESSION['logged_in'] = true;
       $_SESSION['user_id'] = $google_user->id;
       $_SESSION['user_email'] = $google_user->email;
-      $_SESSION['user_name'] = $google_user->name;
+      $_SESSION['user_name'] = isset($google_user->name) ? $google_user->name : $google_user->email;
       $_SESSION['user_photo'] = $google_user->picture;
 
       $user = new StdClass();
       $user->id               = $google_user->id;
       $user->email            = $google_user->email;
-      $user->name             = $google_user->name;
+      $user->name             = isset($google_user->name) ? $google_user->name : $google_user->email;
       $user->picture          = $google_user->picture;
       $user->pass             = generateRandomAlphanumericText();
       $user->phone            = '0000000000';
