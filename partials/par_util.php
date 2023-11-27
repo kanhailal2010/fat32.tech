@@ -160,13 +160,14 @@ function googleLoginButton($buttonTitle=''){
 function facebookLoginButton($buttonTitle = 'Login with Facebook'){
   try {
     include_once(__DIR__.'/../login/fblogin/fb-config.php');
-    if(isset($_SESSION['fbUserId']) and $_SESSION['fbUserId']!=""){
-      echo 'logged in now redirectd';
+    if(isset($_SESSION['logged_in']) and $_SESSION['user_email']!=""){
+      echo 'logged in now redirect to account';
+      redirectTo('account');
       // header('location: https://learncodeweb.com/demo/php/login-with-facebook-using-php-sdk/welcome.php');
       exit;
     }
-    $permissions = array('email'); // Optional permissions
-    $loginUrl = $helper->getLoginUrl('http://fat32.com/login/fblogin/fb-callback.php', $permissions);
+    $permissions = array('name','email','picture'); // Optional permissions
+    $loginUrl = $helper->getLoginUrl(siteUrl('login/'), $permissions);
     return "<a class='btn btn-md btn-primary' href='".$loginUrl."'><i class='lni lni-facebook'></i> &nbsp; {$buttonTitle} </a>";
   }
   catch(Exception $e) {

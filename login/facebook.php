@@ -1,5 +1,6 @@
 <?php
 
+include_once(__DIR__.'/../partials/par_util.php');
 include_once(__DIR__.'/fblogin/fb-config.php');
 
 try {

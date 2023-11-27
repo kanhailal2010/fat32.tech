@@ -1,51 +1,65 @@
 // ====================================================
 // ================================== FB Login Script
 // ====================================================
-  function statusChangeCallback(response) {  // Called with the results from FB.getLoginStatus().
-    console.log('FB statusChangeCallback');
-    console.log(response);                   // The current login status of the person.
-    if (response.status === 'connected') {   // Logged into your webpage and Facebook.
-      // testAPI();  
-      document.getElementById('status').innerHTML = 'logged in code pending';
+  // function statusChangeCallback(response) {  // Called with the results from FB.getLoginStatus().
+  //   console.log('FB statusChangeCallback');
+  //   console.log(response);                   // The current login status of the person.
+  //   if (response.status === 'connected') {   // Logged into your webpage and Facebook.
+  //     // testAPI();  
+  //     FB.api('/me', {fields: 'last_name,email,picture'},function(meres) {
+  //         console.log(meres);  
+  //      console.log('Good to see you, ' + meres.name + '.');
+  //      console.log('Your id is ',meres.id);
+  //      FB.api( `/${meres.id}/`,
+  //           function (pres) {
+  //               if (pres && !pres.error) {
+  //               console.log('profile api ',pres);
+  //             }
+  //           }
+  //       );
+  //    });
+  //   if (response.status === 'connected') {   // Logged into your webpage and Facebook.
+  //     // testAPI();  
+  //     document.getElementById('status').innerHTML = 'logged in code pending';
 
-    } else {                                 // Not logged into your webpage or we are unable to tell.
-      document.getElementById('status').innerHTML = 'Please log ' +
-        'into this webpage.';
-    }
-  }
+  //   } else {                                 // Not logged into your webpage or we are unable to tell.
+  //     document.getElementById('status').innerHTML = 'Please log ' +
+  //       'into this webpage.';
+  //   }
+  // }
 
-  window.fbAsyncInit = function() {
-    FB.init({
-      appId      : FB_APP_ID,
-      xfbml      : true,
-      version    : 'v18.0'
-    });
-    FB.AppEvents.logPageView();
-    FB.getLoginStatus(function(response) {   // Called after the JS SDK has been initialized.
-      statusChangeCallback(response);        // Returns the login status.
-    });
-  };
+  // window.fbAsyncInit = function() {
+  //   FB.init({
+  //     appId      : FB_APP_ID,
+  //     xfbml      : true,
+  //     version    : 'v18.0'
+  //   });
+  //   FB.AppEvents.logPageView();
+  //   FB.getLoginStatus(function(response) {   // Called after the JS SDK has been initialized.
+  //     statusChangeCallback(response);        // Returns the login status.
+  //   });
+  // };
 
-  (function(d, s, id){
-     var js, fjs = d.getElementsByTagName(s)[0];
-     if (d.getElementById(id)) {return;}
-     js = d.createElement(s); js.id = id;
-     js.src = "https://connect.facebook.net/en_US/sdk.js";
-     fjs.parentNode.insertBefore(js, fjs);
-   }(document, 'script', 'facebook-jssdk'));
+  // (function(d, s, id){
+  //    var js, fjs = d.getElementsByTagName(s)[0];
+  //    if (d.getElementById(id)) {return;}
+  //    js = d.createElement(s); js.id = id;
+  //    js.src = "https://connect.facebook.net/en_US/sdk.js";
+  //    fjs.parentNode.insertBefore(js, fjs);
+  //  }(document, 'script', 'facebook-jssdk'));
 
-   document.getElementById('fb_login').addEventListener("click", function() {
-    // document.getElementById("demo").innerHTML = "Hello World";
-    FB.login(function(response) {
-      // handle the response
-      console.log('fb login response ', response);
-      if (response.status === 'connected') {
-        // Logged into your webpage and Facebook.
-      } else {
-        // The person is not logged into your webpage or we are unable to tell. 
-      }
-      }, {scope: 'public_profile,email'});
-  });
+  //  document.getElementById('fb_login').addEventListener("click", function() {
+  //   // document.getElementById("demo").innerHTML = "Hello World";
+  //   FB.login(function(response) {
+  //     // handle the response
+  //     console.log('fb login response ', response);
+  //     if (response.status === 'connected') {
+  //       // Logged into your webpage and Facebook.
+  //     } else {
+  //       // The person is not logged into your webpage or we are unable to tell. 
+  //     }
+  //     }, {scope: 'public_profile,email'});
+  // });
 
 
 // ====================================================

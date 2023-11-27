@@ -63,18 +63,19 @@ if(!in_array($page,$noHeaderFooterPages)) {
 ?>
   <script>
     let GOOGLE_CAPTCHA_SITE_KEY = '<?php echo $_ENV['GOOGLE_CAPTCHA_SITE_KEY']; ?>';
-    let FB_APP_ID = '<?php echo $_ENV['FB_APP_ID'];?>';
+    // let FB_APP_ID = '<?php echo $_ENV['FB_APP_ID'];?>';
   </script>
   <?php 
   $globalJs = [
     'Login JS'          => '/assets/js/login.js',
     'Google Captcha JS' => 'https://www.google.com/recaptcha/api.js?render='.$_ENV['GOOGLE_CAPTCHA_SITE_KEY'],
     'Capcha Code'       => siteUrl('/assets/js/captcha.js'),
-    'FB_auth'                => 'https://connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v18.0&appId='.$_ENV['FB_APP_ID']
+    // 'FB_auth'           => 'https://connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v18.0&appId='.$_ENV['FB_APP_ID']
   ];
   //add attributes to js
   $globalJsAttr = [
-    'FB_auth' => 'async defer crossorigin="anonymous"'
+    'Login JS'          => '/assets/js/login.js',
+    // 'FB_auth'           => 'async defer crossorigin="anonymous"'
   ];
 
   require_once(__DIR__.'/../partials/footer.php');
