@@ -107,7 +107,7 @@ function googleLoginButton($buttonTitle=''){
     $client->setClientSecret($clientSecret);
     $client->setRedirectUri($redirectUri);
     $client->addScope("email");
-    // $client->addScope("profile");
+    $client->addScope("profile");
 
 
     // authenticate code from Google OAuth Flow
