@@ -48,8 +48,8 @@ $alertType    = '';
 $defaultPage = 'login';
 $page = (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] != 'index.php') ? $_GET['page'] : $defaultPage;
 
-// add pages which do not require to load header.php file
-$noHeaderFooterPages = ['google'];
+// add pages which do not require to load header.php and footer file
+$noHeaderFooterPages = ['google','facebook'];
 
 if(!in_array($page,$noHeaderFooterPages)) {
   $globalCss = ['login CSS' => '/assets/css/login.css' ];
