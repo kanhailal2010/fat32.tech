@@ -5,6 +5,8 @@
 require_once(__DIR__.'/../partials/par_util.php');
 require_once(__DIR__.'/../account/db.php');
 
+//set login redirect url (to redirect after login to a particular url);
+setLoginRedirectUrl();
 // if logged in already then redirect to subscription 
 if(isset($_SESSION['logged_in']) && $_SESSION['logged_in']) {
   metaRedirectTo(SITE_URL."account");
@@ -33,7 +35,7 @@ $alertType    = '';
       $_SESSION['user_email'] = $verified['email'];
       $_SESSION['user_name']  = $verified['name'];
       $_SESSION['user_photo'] = $verified['photo'];
-      metaRedirectTo(SITE_URL."account",0);
+      loginRedirectTo(SITE_URL."account",true);
     }
     else {
       $alertMsg               = 'Check your login credentials';
@@ -64,6 +66,7 @@ if(!in_array($page,$noHeaderFooterPages)) {
   <script>
     let GOOGLE_CAPTCHA_SITE_KEY = '<?php echo $_ENV['GOOGLE_CAPTCHA_SITE_KEY']; ?>';
     // let FB_APP_ID = '<?php echo $_ENV['FB_APP_ID'];?>';
+    let captchaInputIds = ['#recaptchaResponse'];
   </script>
   <?php 
   $globalJs = [

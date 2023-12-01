@@ -104,7 +104,7 @@
                 <div class="col-lg-4 col-md-7 col-sm-9">
                     <div class="single-features mt-40">
                         <div class="features-title-icon d-flex justify-content-between">
-                            <h4 class="features-title"><a href="#contact">Build/Fix Website</a></h4>
+                            <h4 class="features-title"><a href="#contact">Build/Upgrade Website</a></h4>
                             <div class="features-icon">
                                 <i class="lni lni-brush"></i>
                                 <img class="shape" src="assets/images/f-shape-1.svg" alt="Shape">
@@ -119,14 +119,14 @@
                 <div class="col-lg-4 col-md-7 col-sm-9">
                     <div class="single-features mt-40">
                         <div class="features-title-icon d-flex justify-content-between">
-                            <h4 class="features-title"><a href="#">Build/Fix Plugin</a></h4>
+                            <h4 class="features-title"><a href="#">Search Engine Optimization</a></h4>
                             <div class="features-icon">
                                 <i class="lni lni-layout"></i>
                                 <img class="shape" src="assets/images/f-shape-1.svg" alt="Shape">
                             </div>
                         </div>
                         <div class="features-content">
-                            <p class="text">We help you build/fix plugins for your existing wordpress website.</p>
+                            <p class="text">We help you bring your website on top of search Engines.</p>
                             <a class="features-btn" href="#contact">LEARN MORE</a>
                         </div>
                     </div> <!-- single features -->

@@ -60,7 +60,9 @@ $_SESSION['user_photo'] = '';
 // $_SESSION['fbAccessToken']	=	$accessToken->getValue();
 
 // echo "login successfull";
-redirectTo(siteUrl('account'));
+// redirectTo(siteUrl('account'));
+loginRedirectTo(siteUrl('account'));
+
 // header('Location: welcome.php');
 exit;
 ?>

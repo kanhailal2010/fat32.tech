@@ -195,7 +195,15 @@ function changePassword($email, $password) {
   }
 }
 
+//  =================================================================================
+//  ==========================      ORDER METHODS        ============================
+//  =================================================================================
+// 1) There will be two order_transactions , One for create order and another for payment order.
+// 2) Create order transaction will be created along with a record in orders table.
+// 3) Paid order transaction will be created using webhook.
+
 // generate order_id for a user.
+// TODO: FIXME: This method is recursive 
 function generateReceiptId($userId) {
   global $db, $debug;
   // Generate a random order ID
@@ -243,22 +251,55 @@ function insertUserOrder($data) {
   } 
 }
 
+// webhook transaction will mark the paid/failed transaction 
 function saveWebhookTransaction($data){
+  global $db,$debug;
+  $insertData = [
+    'order_id'          => $data->payload->payment->entity->order_id,
+    'payment_id'        => $data->payload->payment->entity->id,
+    'method'            => $data->payload->payment->entity->method,
+    'user_email'        => $data->payload->payment->entity->email,
+    'user_phone'        => $data->payload->payment->entity->contact,
+    'payment_status'    => $data->payload->payment->entity->status,
+    'payment_amount'    => $data->payload->payment->entity->amount,
+    'order_status'      => isset($data->payload->order) ? $data->payload->order->entity->status : 'order_not_created',
+    'order_amount'      => isset($data->payload->order) ? $data->payload->order->entity->amount : ($data->payload->payment->entity->amount - $data->payload->payment->entity->fee),
+    'transaction_data'  => json_encode($data)
+  ];
+  return insertOrderTransaction($insertData);
+}
+
+function insertOrderCreateTransaction($order){
+  $insertData = new StdClass();
+  $insertData->order_id          = $order->id;
+  $insertData->payment_id        = null;
+  $insertData->method            = null;
+  $insertData->user_email        = $order->notes->user_email;
+  $insertData->user_phone        = null;
+  $insertData->payment_status    = null;
+  $insertData->payment_amount    = null;
+  $insertData->order_status      = $order->status;
+  $insertData->order_amount      = $order->amount;
+  $insertData->transaction_data  = json_encode($order);
+  return insertOrderTransaction($insertData);
+}
+
+function insertOrderTransaction($data){
   global $db,$debug;
   try {
     $sql = "INSERT INTO order_transactions (id, order_id, payment_id, method, user_email, user_phone, payment_status, payment_amount, order_status, order_amount, transaction_data, created_at) ";
     $sql .= " VALUES (null, :order_id, :payment_id, :method, :user_email, :user_phone, :payment_status, :payment_amount, :order_status, :order_amount, :transaction_data, :created_at) ";
     return $db->prepare($sql)->execute([
-      'order_id'          => $data->payload->payment->entity->order_id,
-      'payment_id'        => $data->payload->payment->entity->id,
-      'method'            => $data->payload->payment->entity->method,
-      'user_email'        => $data->payload->payment->entity->email,
-      'user_phone'        => $data->payload->payment->entity->contact,
-      'payment_status'    => $data->payload->payment->entity->status,
-      'payment_amount'    => $data->payload->payment->entity->amount,
-      'order_status'      => isset($data->payload->order) ? $data->payload->order->entity->status : 'order_not_created',
-      'order_amount'      => isset($data->payload->order) ? $data->payload->order->entity->amount : ($data->payload->payment->entity->amount - $data->payload->payment->entity->fee),
-      'transaction_data'  => json_encode($data),
+      'order_id'          => $data->order_id,
+      'payment_id'        => $data->payment_id,
+      'method'            => $data->method,
+      'user_email'        => $data->user_email,
+      'user_phone'        => $data->user_phone,
+      'payment_status'    => $data->payment_status,
+      'payment_amount'    => $data->payment_amount,
+      'order_status'      => $data->order_status,
+      'order_amount'      => $data->order_amount,
+      'transaction_data'  => $data->transaction_data,
       'created_at'        => Date('Y-m-d H:i:s'),
     ]);
   }
@@ -271,6 +312,62 @@ function saveWebhookTransaction($data){
     }
   } 
 }
+
+function updateOrderStatus($data){
+  global $db,$debug;
+  try {
+    $sql = "UPDATE orders SET order_status=:order_status WHERE pg_order_id=:order_id";
+    return $db->prepare($sql)->execute([
+      'order_id'          => $data->order_id,
+      'order_status'      => $data->order_status
+    ]);
+  }
+  //catch exception
+  catch(Exception $e) {
+    error_log($e->getMessage());
+    if($debug) { echo 'DB Error:: Could not update orders table::' .$e->getMessage(); }
+    else {
+      return false;
+    }
+  } 
+}
+
+function getUsersPaidOrders($userId) {
+  global $db,$debug;
+  try {
+    $sql = "SELECT id, pg_order_id, order_date, order_status, total_amount FROM orders WHERE user_id=:user_id AND order_status=:order_status ORDER BY id DESC";
+
+    $stmt = $db->prepare($sql);
+    // $stmt->bindParam('user_id', $userId);
+    // $stmt->bindParam('order_status', 'paid');
+    if($stmt->execute([
+      'user_id'       => $userId,
+      'order_status'  => 'paid'
+    ])) {
+      return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    else {
+      return [];
+    }
+
+  }
+  //catch exception
+  catch(Exception $e) {
+    error_log($e->getMessage());
+    if($debug) { echo 'DB Error:: Could not get users orders ::' .$e->getMessage(); }
+    else {
+      return false;
+    }
+  } 
+}
+
+// QUERY LOGGING
+// SET global log_output = 'FILE';
+// SET global general_log_file='/Users/kanhai/Documents/Projects/mysql_logs/mysql_general.log';
+
+// INDEX 
+// CREATE INDEX email_ids ON users(email);
+// CREATE INDEX order_ids ON orders(pg_order_id);
 
 // CREATE TABLE `users` (
 //   `id` int NOT NULL AUTO_INCREMENT,
@@ -331,7 +428,7 @@ function saveWebhookTransaction($data){
 //   user_email VARCHAR(50),
 //   user_phone VARCHAR(16),
 //   payment_status VARCHAR(20),
-//   payment_amount INT(10) NOT NULL,
+//   payment_amount INT(10),
 //   order_status enum('created','attempted','paid', 'order_not_created') NOT NULL DEFAULT 'created',
 //   order_amount INT(10) NOT NULL,
 //   transaction_data JSON DEFAULT NULL,

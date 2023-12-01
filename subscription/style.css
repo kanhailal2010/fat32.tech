@@ -1,0 +1,315 @@
+html {
+  box-sizing: border-box;
+  font-family: 'Open Sans', sans-serif;
+}
+
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+body { margin:0; padding: 0;}
+
+.background {
+  padding: 0 25px 25px;
+  position: relative;
+  width: 100%;
+}
+
+.background::after {
+  content: '';
+  background: #0166F3;
+  background: -moz-linear-gradient(top, #0166F3 0%, #4394f4 100%);
+  background: -webkit-linear-gradient(top, #0166F3 0%,#4394f4 100%);
+  background: linear-gradient(to bottom, #0166F3 0%,#4394f4 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#0166F3', endColorstr='#4394f4',GradientType=0 );
+  height: 350px;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  z-index: 1;
+}
+
+@media (min-width: 900px) {
+  .background {
+    padding: 0 0 25px;
+  }
+}
+
+.container {
+  margin: 0 auto;
+  padding: 50px 0 0;
+  max-width: 960px;
+  width: 100%;
+}
+.flex { display: flex; }
+
+.panel {
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 15px 25px;
+  position: relative;
+  width: 100%;
+  z-index: 10;
+}
+
+.pricing-table {
+  box-shadow: 0px 10px 13px -6px rgba(0, 0, 0, 0.08), 0px 20px 31px 3px rgba(0, 0, 0, 0.09), 0px 8px 20px 7px rgba(0, 0, 0, 0.02);
+  flex-direction: column;
+}
+
+@media (min-width: 900px) {
+  .pricing-table {
+    flex-direction: row;
+  }
+}
+
+.pricing-table * {
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.pricing-plan {
+  border-bottom: 1px solid #e1f1ff;
+  padding: 25px;
+}
+
+.pricing-plan:last-child {
+  border-bottom: none;
+}
+
+@media (min-width: 900px) {
+  .pricing-plan {
+    border-bottom: none;
+    border-right: 1px solid #e1f1ff;
+    flex-basis: 100%;
+    padding: 25px 50px;
+  }
+
+  .pricing-plan:last-child {
+    border-right: none;
+  }
+}
+
+.pricing-img {
+  margin-bottom: 25px;
+  max-width: 100%;
+}
+
+.pricing-header {
+  color: #888;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.pricing-features {
+  color: #016FF9;
+  font-weight: 600;
+  letter-spacing: 1px;
+  margin: 50px 0 25px;
+}
+
+.pricing-features-item {
+  border-top: 1px solid #e1f1ff;
+  font-size: 12px;
+  line-height: 1.5;
+  padding: 15px 0;
+}
+
+.pricing-features-item:last-child {
+  border-bottom: 1px solid #e1f1ff;
+}
+
+.pricing-price {
+  color: #016FF9;
+  display: block;
+  font-size: 32px;
+  font-weight: 700;
+}
+
+.pricing-button {
+  border: 1px solid #9dd1ff;
+  border-radius: 10px;
+  color: #348EFE;
+  display: inline-block;
+  margin: 25px 0;
+  padding: 15px 35px;
+  text-decoration: none;
+  transition: all 150ms ease-in-out;
+}
+
+.pricing-button:hover,
+.pricing-button:focus {
+  background-color: #e1f1ff;
+}
+
+.pricing-button.is-featured {
+  background-color: #48aaff;
+  color: #fff;
+}
+
+.pricing-button.is-featured:hover,
+.pricing-button.is-featured:active {
+  background-color: #269aff;
+}
+.notflex { display: block!important; }
+.summary-header { 
+  color: #888;
+  font-weight: 600;
+  letter-spacing: 1px;
+ }
+.summary-table {
+  display: flex;
+  justify-content: space-evenly;
+}
+.summary-table .pricing-feature-item { line-height: 48px; }
+/* =====================================================================================
+ ========================== CSS Payment button =========================
+ ===================================================================================== */
+ .pricing-plan .button-30 {
+  margin-top: 10px;
+ }
+ /* CSS */
+ .button-30 {
+   align-items: center;
+   appearance: none;
+   background-color: #FCFCFD;
+   border-radius: 4px;
+   border-width: 0;
+   box-shadow: rgba(45, 35, 66, 0.4) 0 2px 4px,rgba(45, 35, 66, 0.3) 0 7px 13px -3px,#D6D6E7 0 -3px 0 inset;
+   box-sizing: border-box;
+   color: #36395A;
+   cursor: pointer;
+   display: inline-flex;
+   font-family: "JetBrains Mono",monospace;
+   height: 48px;
+   justify-content: center;
+   line-height: 1;
+   list-style: none;
+   overflow: hidden;
+   padding-left: 16px;
+   padding-right: 16px;
+   position: relative;
+   text-align: left;
+   text-decoration: none;
+   transition: box-shadow .15s,transform .15s;
+   user-select: none;
+   -webkit-user-select: none;
+   touch-action: manipulation;
+   white-space: nowrap;
+   will-change: box-shadow,transform;
+   font-size: 18px;
+  }
+  
+  .button-30:focus {
+    box-shadow: #D6D6E7 0 0 0 1.5px inset, rgba(45, 35, 66, 0.4) 0 2px 4px, rgba(45, 35, 66, 0.3) 0 7px 13px -3px, #D6D6E7 0 -3px 0 inset;
+  }
+  
+  .button-30:hover {
+    box-shadow: rgba(45, 35, 66, 0.4) 0 4px 8px, rgba(45, 35, 66, 0.3) 0 7px 13px -3px, #D6D6E7 0 -3px 0 inset;
+    transform: translateY(-2px);
+  }
+  
+  .button-30:active {
+    box-shadow: #D6D6E7 0 3px 7px inset;
+    transform: translateY(2px);
+  }
+
+  /* =====================================================================================
+   ========================== CSS Text Anim =========================
+   ===================================================================================== */
+   .center { text-align: center;}
+   .center p { color: #777; }
+   .text-wrapper {
+    position: relative;
+    z-index:10;
+   }
+
+   /* //////////////////////////FLOATING ANIMATION /////////////////////////// */
+
+   .text-wrapper{
+    margin: 20% auto;
+    width: 345px;
+    height: 60px;
+  }
+   .text-wrapper h1{
+    position: fixed;
+    text-align: center;
+    vertical-align:middle;
+    justify-content: center;
+    width: 100vw;
+    top: 50px;
+    font-size: 90px;
+    animation-name: floating;
+    animation-duration: 3s;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-in-out;
+    animation-fill-mode: forward;
+    font-family: 'Fredoka One', cursive;
+    text-transform: uppercase;
+    font-weight: 900;
+  }
+  
+  @keyframes floating{
+    0%, 100%{
+      transform: translateY(0px);
+    }
+    50%{
+      transform: translateY(100px);
+    }
+  }
+  
+  .heyy :nth-child(1){
+    animation-delay:0.19s;
+    color: #34649A;
+    z-index: 1;
+    left: 17px;
+  }/*あお*/
+  .heyy :nth-child(2){
+    animation-delay:0.18s;
+    color: #FF715B;
+    z-index: 2;
+    left: 16px;
+  }/*おれんじ*/
+  .heyy :nth-child(3){
+    animation-delay:0.17s;
+    color: #F9CB40;
+    z-index: 3;
+    left: 15px;
+  }/*あか*/
+  .heyy :nth-child(4){
+    animation-delay:0.16s;
+    color: #BCED09;
+    z-index: 4;
+    left: 14px;
+  }/*みずいろ*/
+  .heyy :nth-child(5){
+    animation-delay:0.15s;
+    color: #63CCCA;
+    z-index: 5;
+    left: 13px;
+  }/*みどり*/
+  .heyy :nth-child(6){
+    animation-delay:0.14s;
+    color: #890620;
+    z-index: 6;
+    left: 12px;
+  }/*きいろ*/
+  .heyy :nth-child(7){
+    animation-delay:0.13s;
+    color: #F4C95D;
+    z-index: 7;
+    left: 11px;
+  }/*むらさき*/
+  .heyy :nth-child(8){
+    animation-delay:0.12s;
+    color: #63CCCA;
+    z-index: 8;
+    left: 10px;
+  }/*ぴんく*/
+  .heyy :nth-child(9){
+    animation-delay:0.11s;
+    color: #333;
+    z-index: 9;
+    left:9px;
+  }/*くろ*/
+  

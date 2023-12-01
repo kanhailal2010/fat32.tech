@@ -11,7 +11,6 @@ define('SITE_URL', $_ENV['SITE_URL']);
 define('ALLOWED_SPECIAL_CHARACTER','!#$%&()*+,_.:@<>?[]{}|');
 define('ALLOWED_SPECIAL_CHARACTER_JS','/[!#$%&()*+,_.:@<>?[]{}|]/');
 
-
 function debug(){
   return $_ENV['DEBUG'];
 }
@@ -28,6 +27,19 @@ function metaRedirectTo($url, $delay = 0) {
   // echo str_repeat('<br/>', 10);
   // echo $url; echo $delay;
   echo '<meta http-equiv="refresh" content="'.$delay.'; url=' . $url . '" />';
+}
+
+function loginRedirectTo($url, $metaRedirect = false) {
+  $url = isset($_SESSION["login_redirect_url"]) ? $_SESSION['login_redirect_url'] : $url;
+  unset($_SESSION["login_redirect_url"]);
+  $metaRedirect ? metaRedirectTo($url) : redirectTo($url);
+  exit();
+}
+
+function setLoginRedirectUrl(){
+  if(isset($_REQUEST['redirect_to']) && !empty($_REQUEST['redirect_to']) && !isset($_SESSION['login_redirect_url'])){
+    $_SESSION['login_redirect_url'] = urldecode($_REQUEST['redirect_to']);
+  }
 }
 
 $globalCss = isset($globalCss) ? $globalCss : [];
@@ -53,7 +65,7 @@ function includeCSS(){
 }
 
 $globalJs = isset($globalJs) ? $globalJs : [];
-function includeJS(){
+function includeJS($includeGlobal = true){
   global $globalJs, $globalJsAttr;
   
   $jsArray = [
@@ -71,7 +83,8 @@ function includeJS(){
     'Main Js' => siteUrl('assets/js/main.js')
   ];
 
-  if(count($globalJs) > 0) { $jsArray = array_merge($jsArray, $globalJs); }
+  if(count($globalJs) > 0 && $includeGlobal) { $jsArray = array_merge($jsArray, $globalJs); }
+  if(count($globalJs) > 0 && !$includeGlobal) { $jsArray = $globalJs; }
   
   $html = '';
   foreach($jsArray as $label => $url) {
@@ -142,7 +155,7 @@ function googleLoginButton($buttonTitle=''){
       $user->verification_code= null;
       $user->active           = 1;
       $res = createVerifiedUserIfDoesNotExist($user);
-      if($res[0]) { metaRedirectTo(SITE_URL."account"); }
+      if($res[0]) { loginRedirectTo(SITE_URL."account",true); }
       // print "id:				".$user->id."\n";
       // //print '<img src="'.$user->picture.'" style="float: right;margin-top: 33px;" />'."\n\n";
       // print "email:			".$user->email."\n";

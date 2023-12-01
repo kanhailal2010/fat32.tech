@@ -2,8 +2,10 @@
 // Axis Razorpay TEST Keys
 // Key ID: rzp_test_RhPHqIhEd6JYqA
 // Key Secret: ng4xi6irS9Xx02cCpEqe6RDx
+
 require_once(__DIR__.'/partials/par_util.php');
-echo generateRandomAlphanumericText();
+
+// CASHFREE PAYMENT GATEWAY
 ?>
 <!DOCTYPE html>
 <html lang="en">
