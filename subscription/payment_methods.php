@@ -90,10 +90,10 @@ function createWebhookTransaction($status){
 // update the user with active subscription plan
 function setupUserSubscribedPlan($obj){
   $subs = new StdClass();
-  $subs->user_id              = $data->payload->payment->entity->notes->user_id;
-  $subs->email                = $data->payload->payment->entity->notes->user_email;
-  $subs->sub_plan_id          = $data->payload->payment->entity->notes->plan_id;
-  $subs->sub_plan_details     = $data->payload->payment->entity->notes->plan;
+  $subs->user_id              = $obj->payload->payment->entity->notes->user_id;
+  $subs->email                = $obj->payload->payment->entity->notes->user_email;
+  $subs->sub_plan_id          = $obj->payload->payment->entity->notes->plan_id;
+  $subs->sub_plan_details     = $obj->payload->payment->entity->notes->plan;
   $subs->sub_start_date       = Date('Y-m-d H:i:s');
   $time                       = strtotime($sub_start);
   $subs->sub_end_date         = date("Y-m-d H:i:s", strtotime("+1 month", $time));
