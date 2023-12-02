@@ -260,6 +260,14 @@ function sanitizeInput($data, $type) {
     $username = strtolower($username);
     return $username;
   }
+  if($type == 'number') {
+    $allowedCharacters = '0-9';
+    // Remove any characters that are not allowed
+    $username = preg_replace("/[^$allowedCharacters]/", "", $data);
+    // Convert the username to lowercase
+    $username = strtolower($username);
+    return $username;
+  }
 
 }
 

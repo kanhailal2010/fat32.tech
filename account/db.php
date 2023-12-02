@@ -388,6 +388,33 @@ function getUsersPaidOrders($userId) {
   } 
 }
 
+// insert subscription row for user
+function insertSubscription($data){
+  global $db,$debug;
+  try {
+    $sql = "INSERT INTO subscriptions (user_id, email, sub_plan_id, sub_plan_details, sub_start_date, sub_end_date, subscription_status) ";
+    $sql .= " VALUES ";
+    $sql .= "(:user_id, :email, :sub_plan_id, :sub_plan_details, :sub_start_date, :sub_end_date, :subscription_status) ";
+    return $db->prepare($sql)->execute([
+      'user_id'             => $data->user_id,
+      'email'               => $data->email,
+      'sub_plan_id'         => $data->sub_plan_id,
+      'sub_plan_details'    => $data->sub_plan_details,
+      'sub_start_date'      => $data->sub_start_date,
+      'sub_end_date'        => $data->sub_end_date,
+      'subscription_status' => $data->subscription_status,
+    ]);
+  }
+  //catch exception
+  catch(Exception $e) {
+    error_log('ERROR::USER SUBSCRIPTION PLAN INSERT'.$e->getMessage());
+    if($debug) { echo 'DB Error:: Could not insert users subscription details ::' .$e->getMessage(); }
+    else {
+      return false;
+    }
+  } 
+}
+
 // QUERY LOGGING
 // SET global log_output = 'FILE';
 // SET global general_log_file='/Users/kanhai/Documents/Projects/mysql_logs/mysql_general.log';
@@ -416,7 +443,6 @@ function getUsersPaidOrders($userId) {
 // CREATE TABLE `subscriptions` (
 //   `id` int NOT NULL AUTO_INCREMENT,
 //   `user_id` int NOT NULL,
-//   `name` varchar(255) NOT NULL,
 //   `email` varchar(255) DEFAULT NULL,
 //   `sub_plan_id` int DEFAULT '1',
 //   `sub_plan_details` varchar(255) NOT NULL,

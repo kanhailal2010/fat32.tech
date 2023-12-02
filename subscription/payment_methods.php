@@ -57,15 +57,19 @@ function createWebhookTransaction($status){
   // Get the webhook body and signature
   $webhookBody      = file_get_contents('php://input'); // Request body sent by Razorpay
   $webhookSignature = $_SERVER['HTTP_X_RAZORPAY_SIGNATURE']; // Signature sent by Razorpay
-
+  
+  $webhookBodyObj   = json_decode($webhookBody);
   $isValidSignature = verifyWebhookSignature($webhookBody, $webhookSignature);
     if ($isValidSignature) {
       // Signature is valid, proceed to save the webhook data to the database
       // Here, you can parse $webhookBody (which is in JSON format) and save it to your database
-      $bool = orderPaidWebhookTransaction(json_decode($webhookBody));
+      $bool = orderPaidWebhookTransaction($webhookBodyObj);
+
+      // update the subscribed plan to the user
+      $bool = setupUserSubscribedPlan($webhookBodyObj);
     }
     else {
-      $bool = orderPaidWebhookTransaction(json_decode($webhookBody));
+      $bool = orderPaidWebhookTransaction($webhookBodyObj);
       // Signature is not valid, log the error
       error_log("Invalid webhook signature received ");
     }
@@ -82,6 +86,22 @@ function createWebhookTransaction($status){
   
 }
 
+// after payment confirmation using webhook 
+// update the user with active subscription plan
+function setupUserSubscribedPlan($obj){
+  $subs = new StdClass();
+  $subs->user_id              = $data->payload->payment->entity->notes->user_id;
+  $subs->email                = $data->payload->payment->entity->notes->user_email;
+  $subs->sub_plan_id          = $data->payload->payment->entity->notes->plan_id;
+  $subs->sub_plan_details     = $data->payload->payment->entity->notes->plan;
+  $subs->sub_start_date       = Date('Y-m-d H:i:s');
+  $time                       = strtotime($sub_start);
+  $subs->sub_end_date         = date("Y-m-d H:i:s", strtotime("+1 month", $time));
+  $subs->subscription_status  = 'active';
+  return insertSubscription($subs);
+}
+
+
 function planTitles() {
   $plans = array_keys(getPlan());
   return $plans;
@@ -89,9 +109,10 @@ function planTitles() {
 
 function getPlan($plan = null) {
   $subscriptionPlans = [
-    "monthly" => ["price"=>199,"name"=>"Monthly","description"=>"Full access to features for a Month"],
-    "half-yearly" => ["price"=>999,"name"=>"Half Yearly","description"=>"Full access to features for a period of 6 Months"],
-    "yearly" => ["price"=>1999,"name"=>"Yearly","description"=>"Full access to features for a period of 1 Year"],
+    "trial" => ["id"=> 1, "price"=>0, "name"=>"7 Day Trial","description"=>"Full access to features for a Trial period of 7 Working Days"],
+    "monthly" => ["id"=> 2, "price"=>199,"name"=>"Monthly","description"=>"Full access to features for a Month"],
+    "half-yearly" => ["id"=> 3, "price"=>999,"name"=>"Half Yearly","description"=>"Full access to features for a period of 6 Months"],
+    "yearly" => ["id"=> 4, "price"=>1999,"name"=>"Yearly","description"=>"Full access to features for a period of 1 Year"],
   ];
   if (isset($subscriptionPlans[$plan])){    return $subscriptionPlans[$plan]; }
 

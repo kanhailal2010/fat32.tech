@@ -12,9 +12,10 @@ require_once(__DIR__.'/payment_methods.php');
 $order_id = '';
 // $order_details = $_SESSION['current_order'];
 if(isset($_POST['selected_plan']) && verifyCaptcha()) {
-  $response = new StdClass();
-  $response->status   = false;
-  $selectedPlan = sanitizeInput($_POST['subscription_plan'], 'username');
+  $response         = new StdClass();
+  $response->status = false;
+  $selectedPlan     = sanitizeInput($_POST['subscription_plan'], 'username');
+  $selectedPlanId   = sanitizeInput($_POST['subscription_plan_id'], 'number');
   if(!isset($_POST['subscription_plan']) || !in_array($selectedPlan, planTitles())) {
     $response->msg = "Invalid subscription plan";
     echo json_encode($response);
@@ -24,12 +25,15 @@ if(isset($_POST['selected_plan']) && verifyCaptcha()) {
   try {
     $plan       = getPlan($selectedPlan);
     $user       = getUserByEmail($_SESSION['user_email']);
+    $user_id    = $user['id'];
     $user_email = $user['email'];
     $amount     = $plan['price'];
     $receipt    = generateReceiptId($user['id']);
     $notes      = [
+      'user_id'     => $user_id,
       'user_email'  => $user_email,
-      'plan'        => $selectedPlan
+      'plan'        => $selectedPlan,
+      'plan_id'     => $selectedPlanId
     ];
 
     $order = createRazorOrder($receipt, $amount, $notes);
@@ -51,8 +55,10 @@ if(isset($_POST['selected_plan']) && verifyCaptcha()) {
       'status'          => $order->status,
       'attempts'        => $order->attempts,
       'notes'           => [ 
-        "user_email" =>$order->notes->user_email,
-        "plan"       =>$order->notes->plan
+        "user_email" => $order->notes->user_email,
+        "user_id"    => $order->notes->user_id,
+        "plan"       => $order->notes->plan,
+        "plan_id"    => $order->notes->plan_id
       ],
       'created_at'      => $order->created_at
     ];
@@ -151,13 +157,13 @@ var options = {
 };
 var rzp1 = new Razorpay(options);
 rzp1.on('payment.failed', function (response){
-        alert(response.error.code);
-        alert(response.error.description);
-        alert(response.error.source);
-        alert(response.error.step);
-        alert(response.error.reason);
-        alert(response.error.metadata.order_id);
-        alert(response.error.metadata.payment_id);
+        // alert(response.error.code);
+        // alert(response.error.description);
+        // alert(response.error.source);
+        // alert(response.error.step);
+        // alert(response.error.reason);
+        // alert(response.error.metadata.order_id);
+        // alert(response.error.metadata.payment_id);
 });
 // setTimeout(() => { rzp1.open(); }, 2000);
 

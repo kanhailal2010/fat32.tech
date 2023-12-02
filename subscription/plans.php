@@ -33,6 +33,7 @@ require_once(__DIR__.'/payment_methods.php');
         <?php else: ?>
         <form action="/subscription/checkout" method="post">
           <input type="hidden" value="monthly" id="subscription_plan" name="subscription_plan"/>
+          <input type="hidden" value="2" id="subscription_plan_id" name="subscription_plan_id"/>
           <input type="hidden" value="" id="plan1" name="recaptcha_response" />
         <button type="submit" name="selected_plan" value="monthly" class="button-30">Buy Monthly</button>
         </form>
