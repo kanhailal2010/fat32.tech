@@ -5,8 +5,10 @@
 require_once(__DIR__.'/../partials/par_util.php');
 require_once(__DIR__.'/../account/db.php');
 
-//set login redirect url (to redirect after login to a particular url);
+//set login redirect url [if any]
+// to redirect after login to a particular url;
 setLoginRedirectUrl();
+
 // if logged in already then redirect to subscription 
 if(isset($_SESSION['logged_in']) && $_SESSION['logged_in']) {
   metaRedirectTo(SITE_URL."account");
@@ -26,8 +28,10 @@ $alertType    = '';
     $verified = verifyLogin($email, $pass);
     // var_dump('cred ', $email, $pass);
     // var_dump('After verify ',$verified);
+    // var_dump('user email verified?? ', $verified['email_verified']);
+    $emailVerified = $verified['email_verified'];
     $alertDisplay = 'block';
-    if($verified) {
+    if($emailVerified) {
       $alertMsg               = 'Login Successful.. Redirecting to your dashboard';
       $alertType              = 'success';
       $_SESSION['logged_in']  = true;
@@ -36,6 +40,12 @@ $alertType    = '';
       $_SESSION['user_name']  = $verified['fullname'];
       $_SESSION['user_photo'] = $verified['photo'];
       loginRedirectTo(SITE_URL."account",true);
+    }
+    else if(!$emailVerified){
+      $alertMsg   = "Your account is not yet activated. <a href='".siteUrl('email_activation')."'>Click here</a> to send another activation mail";
+      $alertType  = 'warning';
+      $_SESSION['flash_msg'] = 'Your email address is not verified yet. Please verify!!.';
+      metaRedirectTo(SITE_URL."login/email_activation");
     }
     else {
       $alertMsg               = 'Check your login credentials';
@@ -77,7 +87,6 @@ if(!in_array($page,$noHeaderFooterPages)) {
   ];
   //add attributes to js
   $globalJsAttr = [
-    'Login JS'          => '/assets/js/login.js',
     // 'FB_auth'           => 'async defer crossorigin="anonymous"'
   ];
 

@@ -104,12 +104,12 @@ if(isset($_POST['signup']) && verifyCaptcha()) {
                         <div class="form-input light-rounded-buttons mt-30">
                             <a href="/login/" class="main-btn login_forgot_link">Already have an Account? Sign In</a>
                             <a href="/login/forgot" class="login_forgot_link">Forgot Password?</a>
-                            <button name="signup" class="main-btn light-rounded-two float-right button submit-btn disabled" disabled="disabled">Sign Up</button>
                             <input type="hidden" value="create user" name="signup" />
                             <input type="hidden" name="recaptcha_response" id="recaptchaResponse" >
+                            <button name="signup" class="main-btn light-rounded-two float-right button submit-btn disabled" disabled="disabled">Sign Up</button>
                             <!-- <button class="g-recaptcha main-btn light-rounded-two float-right button submit-btn disabled" disabled="disabled" value="signup"
                             name="signup"
-                            data-sitekey="<?php echo $_ENV['GOOGLE_CAPTCHA_SITE_KEY'];?>" 
+                            data-sitekey="<?php //echo $_ENV['GOOGLE_CAPTCHA_SITE_KEY'];?>" 
                             data-callback='onSubmit' 
                             data-action='submit'>Sign Up</button> -->
                         </div> <!-- form input -->
@@ -126,6 +126,7 @@ if(isset($_POST['signup']) && verifyCaptcha()) {
                     <div class="row justify-content-center">
                       <div class="footer-links">
                         <?php echo googleLoginButton('Login with Google'); ?>
+                        <?php echo facebookLoginButton('Login with Facebook'); ?>
                       </div>
                     </div> <!-- row -->
                 </div>

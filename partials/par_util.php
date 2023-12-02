@@ -178,11 +178,11 @@ function googleLoginButton($buttonTitle=''){
 function facebookLoginButton($buttonTitle = 'Login with Facebook'){
   try {
     include_once(__DIR__.'/../login/fblogin/fb-config.php');
-    if(isset($_SESSION['logged_in']) and $_SESSION['user_email']!=""){
-      echo 'logged in now redirect to account';
-      redirectTo('account');
-      exit;
-    }
+    // if(isset($_SESSION['logged_in']) and $_SESSION['user_email']!=""){
+    //   // echo 'logged in now redirect to account';
+    //   redirectTo('account');
+    //   exit;
+    // }
     $permissions = array('email'); // Optional permissions
     $loginUrl = $helper->getLoginUrl(siteUrl('login/facebook.php'), $permissions);
     return "<a class='btn btn-md btn-primary' href='".$loginUrl."' ><i class='lni lni-facebook'></i> &nbsp; {$buttonTitle} </a>";
@@ -297,7 +297,7 @@ function verifyCaptcha() {
 
 function sendActivationMail($email, $code){
   // Send email with unique ID
-  $link = siteUrl('email_activation?email='.$email.'&activation_code='.$code);
+  $link = siteUrl('login/email_activation?email='.$email.'&activation_code='.$code);
   $subject = 'Please verify your email address';
   $message = '<html><body>';
   $message .= "<h2>Hello!</h2>";
