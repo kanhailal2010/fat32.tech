@@ -33,7 +33,7 @@ $alertType    = '';
       $_SESSION['logged_in']  = true;
       $_SESSION['user_id']    = $verified['id'];
       $_SESSION['user_email'] = $verified['email'];
-      $_SESSION['user_name']  = $verified['name'];
+      $_SESSION['user_name']  = $verified['fullname'];
       $_SESSION['user_photo'] = $verified['photo'];
       loginRedirectTo(SITE_URL."account",true);
     }
