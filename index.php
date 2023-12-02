@@ -6,7 +6,7 @@ $defaultPage = 'home';
 $page = (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] != 'index.php') ? $_GET['page'] : $defaultPage;
 
 // add pages which do not require to load header.php and footer file
-$noHeaderFooterPages = ['pay','pay_success'];
+$noHeaderFooterPages = ['pay','pay_success','logout'];
 
 if(!in_array($page,$noHeaderFooterPages)) {
   require_once(__DIR__.'/partials/header.php'); 

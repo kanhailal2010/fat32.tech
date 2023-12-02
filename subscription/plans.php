@@ -1,11 +1,3 @@
-<?php 
-require_once(__DIR__.'/../partials/par_util.php');
-require_once(__DIR__.'/payment_methods.php');
-
-// print_r($_SESSION);
-// session_destroy();
-
-?>
 <!DOCTYPE html>
 <html lang="en">
 <head>

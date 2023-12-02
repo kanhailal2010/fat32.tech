@@ -5,6 +5,8 @@ require_once(__DIR__.'/db.php');
 // echo str_repeat('<br/>', 10);
 // print_r($_REQUEST);
 
+requireLogin();
+
 $defaultPage = 'dashboard';
 $page = (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] != 'index.php') ? $_GET['page'] : $defaultPage;
 

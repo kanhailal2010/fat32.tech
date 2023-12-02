@@ -19,6 +19,7 @@ $debug = debug();
 function siteUrl($url='') {
   return SITE_URL.$url;
 }
+
 function redirectTo($url) {
   header("Location: ".$url);
 }

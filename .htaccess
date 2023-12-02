@@ -14,6 +14,7 @@ RewriteBase /
   RewriteCond %{REQUEST_FILENAME}.php -f
   RewriteRule ^login/([^/]+)/?$ login/index.php?page=$1 [L,QSA]
   RewriteRule ^account/([^/]+)/?$ account/index.php?page=$1 [L,QSA]
+  RewriteRule ^subscription/([^/]+)/?$ subscription/index.php?page=$1 [L,QSA]
   
   # Remove .php extension from URLs
   RewriteCond %{REQUEST_FILENAME} !-d

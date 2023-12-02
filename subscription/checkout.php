@@ -1,12 +1,7 @@
 <?php 
-require_once(__DIR__.'/../partials/par_util.php');
-require_once(__DIR__.'/../account/db.php');
-require_once(__DIR__.'/payment_methods.php');
-
-
-// if(!isset($_POST['selected_plan'])) {
-//   redirectTo(SITE_URL.'subscription/plans');
-// }
+if(!isset($_POST['selected_plan'])) {
+  redirectTo(SITE_URL.'subscription/plans');
+}
 
 // $order_id = 'order_N6JrZYBG5ULug9';
 $order_id = '';
