@@ -1,3 +1,7 @@
+<Files "*.log">
+  Order Allow,Deny
+  Deny from all
+</Files>
 <IfModule mod_rewrite.c>    
 RewriteEngine On
 RewriteBase /

@@ -51,5 +51,4 @@ if(isset($_REQUEST['webhook'])) {
 
   // On Error:: send internal error (500) to razorpay
   if(!$bool) { http_response_code(500); }
-
 }

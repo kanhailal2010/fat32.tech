@@ -95,12 +95,36 @@ function setupUserSubscribedPlan($obj){
   $subs->sub_plan_id          = $obj->payload->payment->entity->notes->plan_id;
   $subs->sub_plan_details     = $obj->payload->payment->entity->notes->plan;
   $subs->sub_start_date       = Date('Y-m-d H:i:s');
-  $time                       = strtotime($sub_start);
+  $time                       = strtotime($subs->sub_start_date);
   $subs->sub_end_date         = date("Y-m-d H:i:s", strtotime("+1 month", $time));
   $subs->subscription_status  = 'active';
-  return insertSubscription($subs);
-}
 
+  try {
+    return insertSubscription($subs);
+  }
+  //catch exception
+  catch(Exception $e) {
+    error_log('ERROR::USER_SUBSCRIPTIONS_INSERT:: '.$e->getMessage());
+    $isDuplicateRow = isDuplicateError($e->getMessage());
+    $orderId = $obj->payload->payment->entity->order_id;
+    $paymentId = $obj->payload->payment->entity->id;
+    if($isDuplicateRow[0]) {
+      $log = "PREPAID_subscription: ".$isDuplicateRow[1].' order_id:['.$orderId.'] payment_id['.$paymentId.']'.PHP_EOL.
+      ' plan_id['.$subs->sub_plan_id.'] plan_details['.$subs->sub_plan_details.'] start_date['.$subs->sub_start_date.'] end_date['.$subs->sub_end_date.']'.PHP_EOL;
+      applog($log);
+      $subs->subscription_status = 'queued';
+      $subs->order_id            = $orderId;
+      $subs->payment_id          = $paymentId;
+      $bool = insertPrepaidSubscription($subs);
+      // if could not insert to prepaid_subsctiptions also then log the error but return true;
+      if(!$bool) {
+        applog('PREPAID_SUBSCRIPTION_INSERT_FAIL::'.json_encode($obj));
+      }
+      return true;
+    }
+    return false;
+  } 
+}
 
 function planTitles() {
   $plans = array_keys(getPlan());
@@ -138,3 +162,37 @@ function createRazorOrder($receipt, $amount, $notes){
     ]);
  }
 
+ //To check if the error is a duplicate error 
+//  return [boolean, email_if_matched]
+ //GTP: Using PHP write me a method, which on matching this error string "SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'kanhailal2010@gmail.com' for key 'subscriptions.email'" will return an array. The email in the error string can change but rest of the string has to be compared. On matching the method should return an array with first element as true and second element as the email for which error occurred.
+ function isDuplicateError($errorString) {
+  $pattern = "/SQLSTATE\[23000\]: Integrity constraint violation: 1062 Duplicate entry '(.+)' for key 'subscriptions.email'/";
+  
+  // Perform regex match
+  if (preg_match($pattern, $errorString, $matches)) {
+      // Extract the email from the matched string
+      $email = $matches[1];
+
+      // Return an array indicating a match and the email
+      return [true, $email];
+  } else {
+      // No match found
+      return [false, null];
+  }
+}
+// // Example usage:
+// $errorString = "SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'kanhailal2010@gmail.com' for key 'subscriptions.email'";
+// $result = matchErrorString($errorString);
+// echo '<pre>'.print_r($result, true).'</pre>';
+// $errorString = "SQLSTATE[23005]: Integrity coint violation: 1062 Duplicate entry 'kanhailal2010@gmail.com' for key 'subscriptions.email'";
+// $result = matchErrorString($errorString);
+// echo '<pre>'.print_r($result, true).'</pre>';
+// $errorString = "SQLSTATE[23002]: Integrity constraint violation: 1062 Duplicate entry 'kanhailal2010@gmail.com' for key 'subscriptions.email'";
+// $result = matchErrorString($errorString);
+// echo '<pre>'.print_r($result, true).'</pre>';
+// $errorString = "SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'kanhailal4488@gmail.com' for key 'subscriptions.email'";
+// $result = matchErrorString($errorString);
+// echo '<pre>'.print_r($result, true).'</pre>';
+// $errorString = "SQLSTATE[23000]: Integrity constraint violation: 1062  entry 'kanhailal4488@gmail.com' for key 'subscriptions.email'";
+// $result = matchErrorString($errorString);
+// echo '<pre>'.print_r($result, true).'</pre>';

@@ -11,6 +11,17 @@ define('SITE_URL', $_ENV['SITE_URL']);
 define('ALLOWED_SPECIAL_CHARACTER','!#$%&()*+,_.:@<>?[]{}|');
 define('ALLOWED_SPECIAL_CHARACTER_JS','/[!#$%&()*+,_.:@<>?[]{}|]/');
 
+function applog($errorMessage){
+  // Generate log file name with current month and year
+  $logFileName = __DIR__.'/../logs/custom_errors_' . date('Y_m') . '.log';
+
+  // Error message with timestamp
+  $formattedErrorMessage = '[' . date('Y-m-d H:i:s') . '] ' . $errorMessage . PHP_EOL;
+
+  // Append the error message to the log file
+  file_put_contents($logFileName, $formattedErrorMessage, FILE_APPEND | LOCK_EX);
+}
+
 function debug(){
   return $_ENV['DEBUG'];
 }
