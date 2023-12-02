@@ -44,8 +44,12 @@ if(isset($_REQUEST['check_subscription']) && !empty($_REQUEST['check_subscriptio
 }
 
 
-
+// Razorpay webhook
 if(isset($_REQUEST['webhook'])) {
   $status = sanitizeInput($_REQUEST['webhook'], 'fullname');
-  echo createWebhookTransaction($status);
+  $bool = createWebhookTransaction($status);
+
+  // On Error:: send internal error (500) to razorpay
+  if(!$bool) { http_response_code(500); }
+
 }

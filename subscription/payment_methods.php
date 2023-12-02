@@ -62,21 +62,22 @@ function createWebhookTransaction($status){
     if ($isValidSignature) {
       // Signature is valid, proceed to save the webhook data to the database
       // Here, you can parse $webhookBody (which is in JSON format) and save it to your database
-      $bool = saveWebhookTransaction(json_decode($webhookBody));
+      $bool = orderPaidWebhookTransaction(json_decode($webhookBody));
     }
     else {
-      $bool = saveWebhookTransaction(json_decode($webhookBody));
+      $bool = orderPaidWebhookTransaction(json_decode($webhookBody));
       // Signature is not valid, log the error
       error_log("Invalid webhook signature received ");
     }
+    return true;
   }
   //catch exception
   catch(Exception $e) {
+    error_log($e->getMessage());
     if($debug) { echo 'Message: ' .$e->getMessage(); }
     else {
-      return "DB Error:: Could not Process Webhook data";
+      return false;
     }
-    error_log($e->getMessage());
   }
   
 }

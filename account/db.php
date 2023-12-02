@@ -252,19 +252,26 @@ function insertUserOrder($data) {
 }
 
 // webhook transaction will mark the paid/failed transaction 
-function saveWebhookTransaction($data){
+function orderPaidWebhookTransaction($data){
   global $db,$debug;
   $insertData   = new StdClass();
   $insertData->order_id          = $data->payload->payment->entity->order_id;
   $insertData->payment_id        = $data->payload->payment->entity->id;
+  $insertData->signature         = null;
   $insertData->method            = $data->payload->payment->entity->method;
   $insertData->user_email        = $data->payload->payment->entity->email;
   $insertData->user_phone        = $data->payload->payment->entity->contact;
   $insertData->payment_status    = $data->payload->payment->entity->status;
   $insertData->payment_amount    = $data->payload->payment->entity->amount;
-  $insertData->order_status      = isset($data->payload->order) ? $data->payload->order->entity->status : 'order_not_created';
+  $insertData->order_status      = isset($data->payload->order) ? $data->payload->order->entity->status : 'paid';
   $insertData->order_amount      = isset($data->payload->order) ? $data->payload->order->entity->amount : ($data->payload->payment->entity->amount - $data->payload->payment->entity->fee);
   $insertData->transaction_data  = json_encode($data);
+
+  // update order status to paid
+  $order = new StdClass();
+  $order->order_id      = $insertData->order_id;
+  $order->order_status  = 'paid';
+  updateOrderStatus($order);
 
   return insertOrderTransaction($insertData);
 }
@@ -273,6 +280,7 @@ function insertOrderCreateTransaction($order){
   $insertData = new StdClass();
   $insertData->order_id          = $order->id;
   $insertData->payment_id        = null;
+  $insertData->signature         = null;
   $insertData->method            = null;
   $insertData->user_email        = $order->notes->user_email;
   $insertData->user_phone        = null;
@@ -284,14 +292,33 @@ function insertOrderCreateTransaction($order){
   return insertOrderTransaction($insertData);
 }
 
+
+function insertOrderCompleteTransaction($transaction){
+  $insertData = new StdClass();
+  $insertData->order_id          = $transaction->order_id;
+  $insertData->payment_id        = $transaction->payment_id;
+  $insertData->signature         = $transaction->signature;
+  $insertData->method            = null;
+  $insertData->user_email        = null;
+  $insertData->user_phone        = null;
+  $insertData->payment_status    = 'verified_signature';
+  $insertData->payment_amount    = 'verified_signature';
+  $insertData->order_status      = 'paid';
+  $insertData->order_amount      = 0;
+  $insertData->transaction_data  = json_encode($transaction);
+  return insertOrderTransaction($insertData);
+}
+
+
 function insertOrderTransaction($data){
   global $db,$debug;
   try {
-    $sql = "INSERT INTO order_transactions (id, order_id, payment_id, method, user_email, user_phone, payment_status, payment_amount, order_status, order_amount, transaction_data, created_at) ";
-    $sql .= " VALUES (null, :order_id, :payment_id, :method, :user_email, :user_phone, :payment_status, :payment_amount, :order_status, :order_amount, :transaction_data, :created_at) ";
+    $sql = "INSERT INTO order_transactions (id, order_id, payment_id, signature, method, user_email, user_phone, payment_status, payment_amount, order_status, order_amount, transaction_data, created_at) ";
+    $sql .= " VALUES (null, :order_id, :payment_id, :signature, :method, :user_email, :user_phone, :payment_status, :payment_amount, :order_status, :order_amount, :transaction_data, :created_at) ";
     return $db->prepare($sql)->execute([
       'order_id'          => $data->order_id,
       'payment_id'        => $data->payment_id,
+      'signature'         => $data->signature,
       'method'            => $data->method,
       'user_email'        => $data->user_email,
       'user_phone'        => $data->user_phone,
@@ -424,6 +451,7 @@ function getUsersPaidOrders($userId) {
 //   id INT PRIMARY KEY AUTO_INCREMENT,
 //   order_id VARCHAR(50) NOT NULL,
 //   payment_id VARCHAR(50),
+//   signature VARCHAR(200),
 //   method VARCHAR(50),
 //   user_email VARCHAR(50),
 //   user_phone VARCHAR(16),

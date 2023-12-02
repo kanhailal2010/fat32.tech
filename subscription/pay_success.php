@@ -14,11 +14,11 @@ if(isset($_POST['razorpay_payment_id']) && !empty($_POST['razorpay_payment_id'])
     $message = '<h3>Your Payment was successful!</h3>';
     $message .= '<p>Check your email for the payment receipt.</p>';
     $message .= '<p>You can close this window!.</p>';
-    $order = new StdClass();
-    $order->order_id      = $razorpayOrderId;
-    $order->order_status  = 'paid';
-    updateOrderStatus($order);
-    
+    $transaction = new StdClass();
+    $transaction->order_id    = $razorpayOrderId;
+    $transaction->payment_id  = $razorpayPaymentId;
+    $transaction->signature   = $razorpaySignature;
+    insertOrderCompleteTransaction($transaction);
   }
   else {
     $message = '<h3>Could not process Payment!</h3>'; 
