@@ -3251,6 +3251,13 @@ section#terms p { margin:20px 0 ; }
 section#terms ul li { list-style-type:  disc;}
 .footer-links { margin: 0 30px;}
 
+@media (max-width: 480px) {
+  section#terms { margin-top:12%; }
+}
+@media (min-width: 576px) {
+  .hidden_for_desktop { display: none;}
+}
+
 /* google captcha logo position */
  /* Move reCAPTCHA v3 badge to the left */
  

@@ -1,15 +1,8 @@
-html {
-  box-sizing: border-box;
-  font-family: 'Open Sans', sans-serif;
+#plans {
+  /* margin-top: 6%; */
 }
-
-*, *:before, *:after {
-  box-sizing: inherit;
-}
-body { margin:0; padding: 0;}
-
 .background {
-  padding: 0 25px 25px;
+  padding: 15% 25px 25px;
   position: relative;
   width: 100%;
 }
@@ -31,16 +24,10 @@ body { margin:0; padding: 0;}
 
 @media (min-width: 900px) {
   .background {
-    padding: 0 0 25px;
+    padding: 10% 0 25px;
   }
 }
 
-.container {
-  margin: 0 auto;
-  padding: 50px 0 0;
-  max-width: 960px;
-  width: 100%;
-}
 .flex { display: flex; }
 
 .panel {
@@ -227,17 +214,17 @@ body { margin:0; padding: 0;}
    /* //////////////////////////FLOATING ANIMATION /////////////////////////// */
 
    .text-wrapper{
-    margin: 20% auto;
+    margin: 2% auto;
     width: 345px;
     height: 60px;
   }
    .text-wrapper h1{
-    position: fixed;
-    text-align: center;
-    vertical-align:middle;
+    position: absolute;
+    /* text-align: center;
+    vertical-align:middle; */
     justify-content: center;
-    width: 100vw;
-    top: 50px;
+    min-width: 30vw;
+    top: -15vh;
     font-size: 90px;
     animation-name: floating;
     animation-duration: 3s;
@@ -247,6 +234,19 @@ body { margin:0; padding: 0;}
     font-family: 'Fredoka One', cursive;
     text-transform: uppercase;
     font-weight: 900;
+  }
+  @media (max-width: 500px) {
+    .text-wrapper h1{
+      font-size: 75px;
+    }
+    .background {
+      padding-top: 42%;
+    }
+  }
+  @media (max-width: 1250px) {
+    .text-wrapper h1{
+      font-size: 75px;
+    }
   }
   
   @keyframes floating{

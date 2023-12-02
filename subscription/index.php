@@ -29,6 +29,17 @@ if(!in_array($page,$dontRequireLogin)) :
   requireLogin();
 endif;
 
+$globalCss = ['Subscription Page CSS' => siteUrl('assets/css/subscription.css')];
+// add pages which do not require to load header.php and footer file
+$noHeaderFooterPages = ['api'];
 
+if(!in_array($page,$noHeaderFooterPages)) {
+  require_once(__DIR__.'/../partials/header.php'); 
+}
 // load requested page
 require_once(__DIR__.'/'.$page.'.php');
+
+
+if(!in_array($page,$noHeaderFooterPages)) {
+  require_once(__DIR__.'/../partials/footer.php'); 
+}

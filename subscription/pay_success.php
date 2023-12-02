@@ -4,6 +4,8 @@ require_once(__DIR__.'/payment_methods.php');
 
 $paymentSuccess = null;
 $message = '';
+
+
 if(isset($_POST['razorpay_payment_id']) && !empty($_POST['razorpay_payment_id'])) :
   $razorpayOrderId = $_POST['razorpay_order_id'];
   $razorpayPaymentId = $_POST['razorpay_payment_id'];
@@ -29,21 +31,12 @@ endif;
 // var_dump($paymentSuccess);
 
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FAT32 Tech | Payment Complete</title>
-  <?php if($paymentSuccess !== null) :?>
-  <link rel="stylesheet" href="<?php echo siteUrl('subscription/style.css');?>">
-  <link href="https://fonts.googleapis.com/css?family=Fredoka+One&display=swap" rel="stylesheet">
-  <?php endif; ?>
-</head>
-<body>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fredoka+One&display=swap">
+
 <div class="background">
-  <div class="container center">
-    <div class="text-wrapper">
+  <section id="plans" class="features-area">
+
+  <div class="text-wrapper">
       <?php if($paymentSuccess === true) :?>
       <div class="heyy">
         <h1>GREAT !!</h1>
@@ -69,8 +62,17 @@ endif;
 
       <?php endif; ?>
     </div>
-    <?php echo $message; ?>
-  </div> <!-- container -->
-</div>  <!-- background -->
-</body>
-</html>
+
+    <div class="row">
+      <div class="col"></div>
+      <div class="col-10 col-sm-10 text-center">
+
+      <?php echo $message; ?>
+
+      </div> <!-- col-10 -->
+
+      <div class="col"></div>
+
+    </div><!-- row -->
+  </section>
+</div><!-- background -->

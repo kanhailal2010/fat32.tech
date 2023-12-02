@@ -60,6 +60,7 @@
                                 <li class="nav-item"><a class="page-scroll" href="/#about">About</a></li>
                                 <!-- <li class="nav-item"><a class="page-scroll" href="/#team">Team</a></li> -->
                                 <li class="nav-item"><a class="page-scroll" href="/#contact">Contact</a></li>
+                                <li class="nav-item hidden_for_desktop"><a href="<?php echo SITE_URL?>login">Login</a></li>
                             </ul>
                         </div>
                         

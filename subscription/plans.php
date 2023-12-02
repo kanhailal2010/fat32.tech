@@ -1,14 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fat32 Tech | Chrome Extension Plans</title>
-  <link rel="stylesheet" href="./style.css">
-</head>
-<body>
 <div class="background">
-  <div class="container">
+<section id="plans" class="features-area">
+<div class="row">
+  <div class="col"></div>
+  <div class="col-10 col-sm-10 text-center">
+  
     <div class="panel pricing-table flex">
       
 
@@ -53,10 +48,18 @@
         <span class="pricing-price">$400</span>
         <a href="#/" class="button-30">Free trial</a>
       </div>
+
+    </div> <!-- panel -->
+
+    
+      </div> <!-- col-10 -->
+
+      <div class="col"></div>
       
-    </div>
-  </div> <!-- .container -->
-</div> <!-- .background -->
+    </div><!-- row -->
+  </section>
+</div><!-- background -->
+
 <script>
   let GOOGLE_CAPTCHA_SITE_KEY = '<?php echo $_ENV['GOOGLE_CAPTCHA_SITE_KEY']; ?>';
   let captchaInputIds = ['#plan1'];
@@ -66,8 +69,4 @@
     'Google Captcha JS' => 'https://www.google.com/recaptcha/api.js?render='.$_ENV['GOOGLE_CAPTCHA_SITE_KEY'],
     'Capcha Code'       => siteUrl('/assets/js/captcha.js'),
   ];
-
-  echo includeJS(false); // false to EXCLUDE including default js files
 ?>
-</body>
-</html>

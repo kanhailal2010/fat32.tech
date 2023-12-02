@@ -19,7 +19,8 @@ require_once(__DIR__.'/'.$page.'.php');
 if(!in_array($page,$noHeaderFooterPages)) :
   ?>
   <script>
-    let google_captcha_site_key = '<?php echo $_ENV['GOOGLE_CAPTCHA_SITE_KEY']; ?>';
+    let GOOGLE_CAPTCHA_SITE_KEY = '<?php echo $_ENV['GOOGLE_CAPTCHA_SITE_KEY']; ?>';
+    let captchaInputIds = ['#recaptchaResponse'];
   </script>
   <?php
   $globalJs = [

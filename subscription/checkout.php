@@ -91,17 +91,13 @@ if(isset($_POST['selected_plan']) && verifyCaptcha()) {
 }
 
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fat32 Tech | Chrome Extension Plan Checkout</title>
-  <link rel="stylesheet" href="<?php echo siteUrl('subscription/style.css'); ?> ">
-</head>
-<body>
+
 <div class="background">
-  <div class="container">
+  <section id="plans" class="features-area">
+    <div class="row">
+      <div class="col"></div>
+      <div class="col-10 col-sm-10 text-center">
+
       <?php if(!empty($order_id)): ?>
           <div class="panel pricing-table noflex">
             <h3 class="summary-header">Order Summary</h3>
@@ -168,7 +164,10 @@ document.getElementById('rzp-button1').onclick = function(e){
 }
 </script>
 <?php endif; ?>
-  </div>
-</div>
-</body>
-</html>
+      </div> <!-- col-10 -->
+
+      <div class="col"></div>
+
+    </div><!-- row -->
+  </section>
+</div><!-- background -->
