@@ -254,18 +254,18 @@ function insertUserOrder($data) {
 // webhook transaction will mark the paid/failed transaction 
 function saveWebhookTransaction($data){
   global $db,$debug;
-  $insertData = [
-    'order_id'          => $data->payload->payment->entity->order_id,
-    'payment_id'        => $data->payload->payment->entity->id,
-    'method'            => $data->payload->payment->entity->method,
-    'user_email'        => $data->payload->payment->entity->email,
-    'user_phone'        => $data->payload->payment->entity->contact,
-    'payment_status'    => $data->payload->payment->entity->status,
-    'payment_amount'    => $data->payload->payment->entity->amount,
-    'order_status'      => isset($data->payload->order) ? $data->payload->order->entity->status : 'order_not_created',
-    'order_amount'      => isset($data->payload->order) ? $data->payload->order->entity->amount : ($data->payload->payment->entity->amount - $data->payload->payment->entity->fee),
-    'transaction_data'  => json_encode($data)
-  ];
+  $insertData   = new StdClass();
+  $insertData->order_id          = $data->payload->payment->entity->order_id;
+  $insertData->payment_id        = $data->payload->payment->entity->id;
+  $insertData->method            = $data->payload->payment->entity->method;
+  $insertData->user_email        = $data->payload->payment->entity->email;
+  $insertData->user_phone        = $data->payload->payment->entity->contact;
+  $insertData->payment_status    = $data->payload->payment->entity->status;
+  $insertData->payment_amount    = $data->payload->payment->entity->amount;
+  $insertData->order_status      = isset($data->payload->order) ? $data->payload->order->entity->status : 'order_not_created';
+  $insertData->order_amount      = isset($data->payload->order) ? $data->payload->order->entity->amount : ($data->payload->payment->entity->amount - $data->payload->payment->entity->fee);
+  $insertData->transaction_data  = json_encode($data);
+
   return insertOrderTransaction($insertData);
 }
 

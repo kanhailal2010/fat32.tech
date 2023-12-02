@@ -51,7 +51,8 @@ function verifyPaymentSignature($razorpayPaymentId, $razorpaySignature){
   // return $api->utility->verifyPaymentSignature(array('razorpay_order_id' => $_SESSION['current_order']['id'], 'razorpay_payment_id' => $razorpayPaymentId, 'razorpay_signature' => $razorpaySignature));
 }
 
-function createWebhookTransaction(){
+// TODO: We're not using the argument $status as of now
+function createWebhookTransaction($status){
   try {
   // Get the webhook body and signature
   $webhookBody      = file_get_contents('php://input'); // Request body sent by Razorpay

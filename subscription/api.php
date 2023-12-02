@@ -46,5 +46,6 @@ if(isset($_REQUEST['check_subscription']) && !empty($_REQUEST['check_subscriptio
 
 
 if(isset($_REQUEST['webhook'])) {
-  echo createWebhookTransaction();
+  $status = sanitizeInput($_REQUEST['webhook'], 'fullname');
+  echo createWebhookTransaction($status);
 }
