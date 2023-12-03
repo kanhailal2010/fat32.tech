@@ -54,6 +54,15 @@ function setLoginRedirectUrl(){
   }
 }
 
+function getOnlyFilename($filename) {
+  return preg_replace('/\.\w+$/', '', $filename);
+}
+
+function getPrettyPage($defaultPage){
+  $page =  (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] != 'index.php') ? $_GET['page'] : $defaultPage;
+  return getOnlyFilename($page);
+}
+
 $globalCss = isset($globalCss) ? $globalCss : [];
 function includeCSS(){
   global $globalCss;

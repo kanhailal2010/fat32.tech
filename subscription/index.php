@@ -22,7 +22,7 @@ require_once(__DIR__.'/payment_methods.php');
 
 // load pages 
 $defaultPage = 'plans';
-$page = (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] != 'index.php') ? $_GET['page'] : $defaultPage;
+$page = getPrettyPage($defaultPage);
 
 $dontRequireLogin = ['plans','api'];
 if(!in_array($page,$dontRequireLogin)) :

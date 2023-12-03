@@ -58,11 +58,11 @@ $alertType    = '';
 // print_r($_REQUEST);
 
 $defaultPage = 'login';
-$page = (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] != 'index.php') ? $_GET['page'] : $defaultPage;
+$page = getPrettyPage($defaultPage);
+
 
 // add pages which do not require to load header.php and footer file
 $noHeaderFooterPages = ['google','facebook'];
-
 if(!in_array($page,$noHeaderFooterPages)) {
   $globalCss = ['login CSS' => '/assets/css/login.css' ];
   require_once(__DIR__.'/../partials/header.php');

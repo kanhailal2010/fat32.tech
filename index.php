@@ -3,7 +3,7 @@ require_once(__DIR__.'/partials/par_util.php');
 
 // load pages 
 $defaultPage = 'home';
-$page = (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] != 'index.php') ? $_GET['page'] : $defaultPage;
+$page = getPrettyPage($defaultPage);
 
 // add pages which do not require to load header.php and footer file
 $noHeaderFooterPages = ['pay','pay_success','logout'];

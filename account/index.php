@@ -8,7 +8,7 @@ require_once(__DIR__.'/db.php');
 requireLogin();
 
 $defaultPage = 'dashboard';
-$page = (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] != 'index.php') ? $_GET['page'] : $defaultPage;
+$page = getPrettyPage($defaultPage);
 
 // add pages which do not require to load header.php file
 $noHeaderPages = ['logout'];
