@@ -3249,7 +3249,7 @@ p.form-message.success, p.form-message.error {
 section#terms { margin-top:6%; padding-bottom: 100px; }
 section#terms p { margin:20px 0 ; }
 section#terms ul li { list-style-type:  disc;}
-.footer-links { margin: 0 30px;}
+.footer-links { margin: 0 30px; text-align: center;}
 
 @media (max-width: 480px) {
   section#terms { margin-top:12%; }

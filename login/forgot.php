@@ -148,14 +148,14 @@ $submitText = $showResetFields ? 'Reset Password' : 'Recover Password';
             <br/>
 
             <div class="row">
-                <div class="col-lg-12">
-                    <div class="row justify-content-center">
-                      <div class="footer-links">
-                        <?php echo googleLoginButton('Login with Google'); ?>
-                      </div>
-                    </div> <!-- row -->
-                </div>
-            </div>
+              <div class="col"></div>
+              <div class="col-5 footer-links">
+                <?php echo googleLoginButton('Login with Google'); ?>
+                <?php echo facebookLoginButton('Login with Facebook'); ?>
+                <!-- button id="fb_login" class="btn btn-md btn-primary"><i class='lni lni-facebook'></i> &nbsp; Login with Facebook js</button -->
+              </div>
+              <div class="col"></div>
+            </div><!-- row -->
 
           </div> <!-- contact wrapper form -->
       </div>
