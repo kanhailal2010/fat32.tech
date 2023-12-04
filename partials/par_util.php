@@ -22,10 +22,30 @@ function applog($errorMessage){
   file_put_contents($logFileName, $formattedErrorMessage, FILE_APPEND | LOCK_EX);
 }
 
-function debug(){
-  return $_ENV['DEBUG'];
+function handleFatalError() {
+  if ($error = error_get_last()) {
+    $errorMessage = 'Fatal error: ' . $error['type'] . ' - ' . $error['message'] . ' in ' . $error['file'] . ' on line ' . $error['line'];
+
+    // Log the error to a file
+    // error_log($errorMessage, 3, 'error_log.txt');
+    print_r($errorMessage);
+  }
 }
-$debug = debug();
+
+function ifDebugOn(){
+  $debug = $_ENV['DEBUG'];
+  $debug ? register_shutdown_function('handleFatalError') : '';
+  return $debug;
+}
+$debug = ifDebugOn();
+
+function debug($var){
+  // enable error reporting for php
+  ini_set('display_errors', 1);
+  ini_set('display_startup_errors', 1);
+  error_reporting(E_ALL);
+  echo '<pre>'; print_r($var); echo '</pre>';
+}
 
 function siteUrl($url='') {
   return SITE_URL.$url;
@@ -188,7 +208,7 @@ function googleLoginButton($buttonTitle=''){
     }
   }
   catch(Exception $e) {
-    if(debug()) { echo 'Message: ' .$e->getMessage(); }
+    if(ifDebugOn()) { echo 'Message: ' .$e->getMessage(); }
     else {
       return "Error:: Could not authenticate Google user";
     }
@@ -209,7 +229,7 @@ function facebookLoginButton($buttonTitle = 'Login with Facebook'){
     return "<a class='btn btn-md btn-primary' href='".$loginUrl."' ><i class='lni lni-facebook'></i> &nbsp; {$buttonTitle} </a>";
   }
   catch(Exception $e) {
-    if(debug()) { echo 'Message: ' .$e->getMessage(); }
+    if(ifDebugOn()) { echo 'Message: ' .$e->getMessage(); }
     else {
       return "Error:: Could not authenticate Facebook user";
     }

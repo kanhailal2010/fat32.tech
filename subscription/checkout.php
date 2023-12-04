@@ -1,4 +1,6 @@
 <?php 
+// TODO:Add Checkbox for accepting terms and conditions
+
 if(!isset($_POST['selected_plan'])) {
   redirectTo(SITE_URL.'subscription/plans');
 }

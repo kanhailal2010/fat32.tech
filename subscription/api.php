@@ -15,10 +15,29 @@ include_once(__DIR__.'/../partials/par_util.php');
 include_once(__DIR__.'/../account/db.php');
 require_once(__DIR__.'/payment_methods.php');
 
+// TODO: update subscription if prepaid
+// FIXME: change request to post
+/**
+ * This method checks of the current status and returns 'active' if active subscription is found for a user
+ * if no subscription record of inactive getUserSubscriptionDetails($email) returns [false, 'msg'] 
+ *    Then maybe trial period ended Or subscription ended
+ *    For confirmation we check if the user has made any prepaid subscription 
+ *      If prepaid_subscription row found with status 'queued' 
+ *        then we extend the users subscription from todays date + duration of prepaid_subscription
+ *          if users sub_end_date is less than todays date
+ *          else if users sub_end_date is in the future then we add sub_end_date + duration of prepaid_subscription 
+ *    Then we re-fetch the subscription details to get the lastest subscription status 
+ * If subscription record is active 
+ *    Then we check if the sub_end_date is greater than todays date
+ */
+$checkedPrepaidSubscriptions = false;
 if(isset($_REQUEST['check_subscription']) && !empty($_REQUEST['check_subscription'])) {
+  $js = '{"event":"payment.captured","entity":"event","payload":{"payment":{"entity":{"id":"pay_N7mLQCwEsgtIYm","fee":470,"tax":72,"upi":{"vpa":"success@razorpay"},"vpa":"success@razorpay","bank":null,"email":"kanhailal4488@gmail.com","notes":{"plan":"monthly","plan_id":"2","user_id":"2","user_email":"dribvul@gmail.com","payment_for":"monthly Subscription"},"amount":20370,"entity":"payment","method":"upi","status":"captured","wallet":null,"card_id":null,"contact":"+919008654469","captured":true,"currency":"INR","order_id":"order_N7mLEkGWbnFOE3","created_at":1701586025,"error_code":null,"error_step":null,"invoice_id":null,"base_amount":20370,"description":"monthly Subscription","error_reason":null,"error_source":null,"acquirer_data":{"rrn":"688356758697","upi_transaction_id":"D6D4A5194B66D90290207B0E7B7169F2"},"international":false,"refund_status":null,"amount_refunded":0,"error_description":null}}},"contains":["payment"],"account_id":"acc_GBFhCy62gdEPz1","created_at":1701586026}';
+  $js = json_decode($js);
+  setupUserSubscribedPlan($js);
   $res = [];
   $res['status'] = false;
-  if($_ENV['DEBUG']) { $res['server'] = $_SERVER;}
+  // if($_ENV['DEBUG']) { $res['server'] = $_SERVER;}
   
   $valid = validateAjaxData($_REQUEST);
   if(!$valid['status']) {
@@ -32,17 +51,72 @@ if(isset($_REQUEST['check_subscription']) && !empty($_REQUEST['check_subscriptio
   $res['subscription']        = false;
 
   // Example usage
-  $emailOrPhone = str_replace('"','',$_REQUEST['email']);
-  $subscription = getSubscriptionDetails($emailOrPhone);
-  if ($subscription !== false) {
+  $email = str_replace('"','',$_REQUEST['email']);
+  $subscription = getUserSubscriptionDetails($email);
+  // if subscription details [not_found/inactive] but user details exist in users table
+  // check prepaid_subscriptions (maybe trial subscription has ended)
+  if($subscription[0] == false && isset($subscription[2])) {
+  // if(isset($subscription[2])) {
+    // check prepaid subscriptions
+    $userId = $subscription[2]['id'];
+    $prepaidSubscriptions = getPrepaidSubscriptions($userId);
+
+    // if prepaid_subscription record exist
+    if($prepaidSubscriptions[0]) {
+      // get the duration of prepaid_subscription
+      $duration     = $prepaidSubscriptions[1]['sub_plan_duration'];
+      $prepaidSubId = $prepaidSubscriptions[1]['id'];
+
+      // extend the duration
+      $bool = extendUserSubscriptionFlow($userId, $duration, $prepaidSubId);
+
+      // fetch the user subscription details again
+      $subscription = getUserSubscriptionDetails($email);
+    }
+  }
+  // extendUserSubscriptionFlow(1, 7, 1);
+  // extendUserSubscription(1, -2);
+  if ($subscription[0] !== false) {
+    // check date of end subs else mark inactive
+    $today = strtotime(Date('Y-m-d'));
+    $sub_end = strtotime($subscription[1]['sub_end_date']);
+    if($today < $sub_end){
+      echo json_encode($res);
+      exit();
+    }
     $res['msg']                 = "User has an active subscription.";
-    $res['subscription_status'] = $subscription['subscription_status'];
+    $res['subscription_status'] = $subscription[1]['subscription_status'];
     $res['subscription']        = $subscription;
   }
   echo json_encode($res);
   exit();
 }
 
+/**
+ * This method will execute in a transaction 
+ * It runs two methods 
+ *    One method to extend the duration of subscription
+ *    another method to mark the used prepaid_subscription row to exhausted
+ */
+function extendUserSubscriptionFlow($user_id, $duration, $prepaid_sub_id){
+  global $db;
+  $db->beginTransaction();
+  try {
+    
+    $bool = extendUserSubscription($user_id, $duration);
+    $dub = exhaustPrepaidSubscription($prepaid_sub_id);
+
+    $db->commit();
+    return true;
+  }   //catch exception
+  catch(Exception $e) {
+    $db->rollBack();
+    $log = "EXTEND_SUBSCRIPTION_FLOW_ERROR: subscription::user_id[$user_id] duration_to_extend[$duration] prepaid_subscription::id[$prepaid_sub_id] ";
+      applog($log);
+    error_log($e->getMessage());
+    return false;
+  }
+}
 
 // Razorpay webhook
 if(isset($_REQUEST['webhook'])) {

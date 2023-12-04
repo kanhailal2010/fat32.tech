@@ -388,54 +388,6 @@ function getUsersPaidOrders($userId) {
   } 
 }
 
-// insert subscription row for user
-function insertSubscription($data){
-  global $db,$debug;
-  $sql = "INSERT INTO subscriptions (user_id, email, sub_plan_id, sub_plan_details, sub_start_date, sub_end_date, subscription_status) ";
-  $sql .= " VALUES ";
-  $sql .= "(:user_id, :email, :sub_plan_id, :sub_plan_details, :sub_start_date, :sub_end_date, :subscription_status) ";
-  return $db->prepare($sql)->execute([
-    'user_id'             => $data->user_id,
-    'email'               => $data->email,
-    'sub_plan_id'         => $data->sub_plan_id,
-    'sub_plan_details'    => $data->sub_plan_details,
-    'sub_start_date'      => $data->sub_start_date,
-    'sub_end_date'        => $data->sub_end_date,
-    'subscription_status' => $data->subscription_status,
-  ]);
-}
-
-// insert subscription row for user
-function insertPrepaidSubscription($data){
-  global $db,$debug;
-  $sql = "INSERT INTO prepaid_subscriptions (user_id, email, order_id, payment_id, sub_plan_id, sub_plan_details, sub_start_date, sub_end_date, subscription_status) ";
-  $sql .= " VALUES ";
-  $sql .= "(:user_id, :email, :order_id, :payment_id, :sub_plan_id, :sub_plan_details, :sub_start_date, :sub_end_date, :subscription_status) ";
-  try {
-
-    return $db->prepare($sql)->execute([
-      // 'table_name'          => $tableName,
-      'user_id'             => $data->user_id,
-      'email'               => $data->email,
-      'order_id'            => $data->order_id,
-      'payment_id'          => $data->payment_id,
-      'sub_plan_id'         => $data->sub_plan_id,
-      'sub_plan_details'    => $data->sub_plan_details,
-      'sub_start_date'      => $data->sub_start_date,
-      'sub_end_date'        => $data->sub_end_date,
-      'subscription_status' => $data->subscription_status,
-    ]);
-  }
-  //catch exception
-  catch(Exception $e) {
-    error_log('ERROR::PREPAID_USER_SUBSCRIPTIONS_INSERT:: Could not insert to db:: '.$e->getMessage());
-    error_log(json_encode($data));
-    if($debug) { echo 'DB Error:: Could not insert to prepaid_subscriptions ::' .$e->getMessage(); }
-    else {
-      return false;
-    }
-  }
-}
 
 // QUERY LOGGING
 // SET global log_output = 'FILE';
@@ -468,8 +420,8 @@ function insertPrepaidSubscription($data){
 //   `email` varchar(255) DEFAULT NULL,
 //   `sub_plan_id` int DEFAULT '1',
 //   `sub_plan_details` varchar(255) NOT NULL,
-//   `sub_start_date` date DEFAULT NULL,
-//   `sub_end_date` date DEFAULT NULL,
+//   `sub_start_date` datetime DEFAULT CURRENT_TIMESTAMP,
+//   `sub_end_date` datetime DEFAULT NULL,
 //   `subscription_status` enum('active','inactive','cancelled') NOT NULL DEFAULT 'inactive',
 //   PRIMARY KEY (`id`),
 //   UNIQUE KEY `email` (`email`)
@@ -482,13 +434,15 @@ function insertPrepaidSubscription($data){
 //   `id` int NOT NULL AUTO_INCREMENT,
 //   `user_id` int NOT NULL,
 //   `email` varchar(255) DEFAULT NULL,
-//   `order_id` VARCHAR(50) NOT NULL,
-//   `payment_id` VARCHAR(50) NOT NULL,
+//   `order_id` varchar(50) NOT NULL,
+//   `payment_id` varchar(50) NOT NULL,
 //   `sub_plan_id` int DEFAULT '1',
 //   `sub_plan_details` varchar(255) NOT NULL,
 //   `sub_start_date` date DEFAULT NULL,
 //   `sub_end_date` date DEFAULT NULL,
 //   `subscription_status` enum('queued','exhausted','cancelled') NOT NULL DEFAULT 'queued',
+//   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+//   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
 //   PRIMARY KEY (`id`),
 //   UNIQUE KEY `order_id` (`order_id`),
 //   UNIQUE KEY `payment_id` (`payment_id`)
