@@ -467,32 +467,4 @@ function updateOrderStatus($data){
   } 
 }
 
-function getUsersPaidOrders($userId) {
-  global $db,$debug;
-  try {
-    $sql = "SELECT id, pg_order_id, order_date, order_status, total_amount FROM orders WHERE user_id=:user_id AND order_status=:order_status ORDER BY id DESC";
-
-    $stmt = $db->prepare($sql);
-    // $stmt->bindParam('user_id', $userId);
-    // $stmt->bindParam('order_status', 'paid');
-    if($stmt->execute([
-      'user_id'       => $userId,
-      'order_status'  => 'paid'
-    ])) {
-      return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-    else {
-      return [];
-    }
-
-  }
-  //catch exception
-  catch(Exception $e) {
-    error_log($e->getMessage());
-    if($debug) { echo 'DB Error:: Could not get users orders ::' .$e->getMessage(); }
-    else {
-      return false;
-    }
-  } 
-}
 
