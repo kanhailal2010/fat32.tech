@@ -1,10 +1,36 @@
 <?php 
-// ====================================================================================
-// ========================= ORDER Methods ======================================
-// ====================================================================================
-
 include_once(__DIR__.'/../account/db.php');
 
+// =========================================================================================
+// ========================= Subscription PLAN Methods =====================================
+// =========================================================================================
+
+
+function planTitles() {
+  $plans = array_keys(getPlan());
+  return $plans;
+}
+
+function getPlanDuration($planCode) {
+  $plan = getPlan($planCode);
+  return ($plan) ? $plan['duration'] : 0;
+}
+
+function getPlan($plan = null) {
+  $subscriptionPlans = [
+    "trial" => ["id"=> 1, "price"=>0, "duration" => 7, "name"=>"7 Day Trial","description"=>"Full access to features for a Trial period of 7 Working Days"],
+    "monthly" => ["id"=> 2, "price"=>199,"duration" => 30, "name"=>"Monthly","description"=>"Full access to features for a Month"],
+    "half-yearly" => ["id"=> 3, "price"=>999,"duration" => 182, "name"=>"Half Yearly","description"=>"Full access to features for a period of 6 Months"],
+    "yearly" => ["id"=> 4, "price"=>1999,"duration" => 365, "name"=>"Yearly","description"=>"Full access to features for a period of 1 Year"],
+  ];
+  if (isset($subscriptionPlans[$plan])){    return $subscriptionPlans[$plan]; }
+
+  return ($plan && isset($subscriptionPlans[$plan])) ? $subscriptionPlans[$plan] : $subscriptionPlans;
+}
+
+// ====================================================================================
+// ========================= Subscription Methods =====================================
+// ====================================================================================
 
 // insert subscription row for user
 function insertSubscription($data){
@@ -88,6 +114,86 @@ function getPrepaidSubscriptions($user_id){
   return [true, $subscription];
 }
 
+
+// after payment confirmation using webhook 
+// update the user with active subscription plan
+function setupUserSubscribedPlan($obj){
+  $subs = new StdClass();
+  $subs->user_id              = $obj->payload->payment->entity->notes->user_id;
+  $subs->email                = $obj->payload->payment->entity->notes->user_email;
+  $subs->sub_plan_id          = $obj->payload->payment->entity->notes->plan_id;
+  $subs->sub_plan_details     = $obj->payload->payment->entity->notes->plan;
+  $subs->sub_start_date       = Date('Y-m-d H:i:s');
+  $time                       = strtotime($subs->sub_start_date);
+  $duration                   = getPlanDuration($subs->sub_plan_details);
+  $subs->sub_end_date         = date("Y-m-d H:i:s", strtotime("+$duration day", $time));
+  $subs->subscription_status  = 'active';
+
+  try {
+    return insertSubscription($subs);
+  }
+  //catch exception
+  catch(Exception $e) {
+    error_log('ERROR::USER_SUBSCRIPTIONS_INSERT:: '.$e->getMessage());
+    $isDuplicateRow = isDuplicateErrorOnSubscription($e->getMessage());
+    $orderId = $obj->payload->payment->entity->order_id;
+    $paymentId = $obj->payload->payment->entity->id;
+    if($isDuplicateRow[0]) {
+      $log = "PREPAID_SUBSCRIPTION_ADDED::user[".$subs->email."] ".$isDuplicateRow[1].' order_id:['.$orderId.'] payment_id['.$paymentId.']'.PHP_EOL.
+      ' plan_id['.$subs->sub_plan_id.'] plan_details['.$subs->sub_plan_details.'] start_date['.$subs->sub_start_date.'] end_date['.$subs->sub_end_date.']'.PHP_EOL;
+      applog($log);
+      // get plan duration using sub_plan_details
+      $subs->plan_duration        = getPlanDuration($subs->sub_plan_details);
+      $subs->subscription_status  = 'queued';
+      $subs->order_id             = $orderId;
+      $subs->payment_id           = $paymentId;
+      $bool = insertPrepaidSubscription($subs);
+      // if could not insert to prepaid_subsctiptions also then log the error but return true;
+      if(!$bool) {
+        applog('PREPAID_SUBSCRIPTION_INSERT_FAIL::'.json_encode($obj));
+      }
+      return true;
+    }
+    return false;
+  } 
+}
+
+
+//To check if the error is a duplicate error 
+//  return [boolean, email_if_matched]
+//GTP: Using PHP write me a method, which on matching this error string "SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'kanhailal2010@gmail.com' for key 'subscriptions.email'" will return an array. The email in the error string can change but rest of the string has to be compared. On matching the method should return an array with first element as true and second element as the email for which error occurred.
+function isDuplicateErrorOnSubscription($errorString) {
+  $pattern = "/SQLSTATE\[23000\]: Integrity constraint violation: 1062 Duplicate entry '(.+)' for key 'subscriptions.email'/";
+  
+  // Perform regex match
+  if (preg_match($pattern, $errorString, $matches)) {
+      // Extract the email from the matched string
+      $email = $matches[1];
+
+      // Return an array indicating a match and the email
+      return [true, $email];
+  } else {
+      // No match found
+      return [false, null];
+  }
+}
+// // Example usage:
+// $errorString = "SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'kanhailal2010@gmail.com' for key 'subscriptions.email'";
+// $result = matchErrorString($errorString);
+// echo '<pre>'.print_r($result, true).'</pre>';
+// $errorString = "SQLSTATE[23005]: Integrity coint violation: 1062 Duplicate entry 'kanhailal2010@gmail.com' for key 'subscriptions.email'";
+// $result = matchErrorString($errorString);
+// echo '<pre>'.print_r($result, true).'</pre>';
+// $errorString = "SQLSTATE[23002]: Integrity constraint violation: 1062 Duplicate entry 'kanhailal2010@gmail.com' for key 'subscriptions.email'";
+// $result = matchErrorString($errorString);
+// echo '<pre>'.print_r($result, true).'</pre>';
+// $errorString = "SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'kanhailal4488@gmail.com' for key 'subscriptions.email'";
+// $result = matchErrorString($errorString);
+// echo '<pre>'.print_r($result, true).'</pre>';
+// $errorString = "SQLSTATE[23000]: Integrity constraint violation: 1062  entry 'kanhailal4488@gmail.com' for key 'subscriptions.email'";
+// $result = matchErrorString($errorString);
+// echo '<pre>'.print_r($result, true).'</pre>';
+
 /** 
  * 
  * ==========================================================================================
@@ -136,6 +242,29 @@ function exhaustPrepaidSubscription($subscription_id){
  * ============================================================== TRANSACTIONS END ==========
  * ==========================================================================================
  */
+
+// ====================================================================================
+// ========================= ORDER Methods ======================================
+// ====================================================================================
+
+function razorpayAmount($rupees) {
+  // Multiply the rupees by 100 to convert to paise
+  $paise = $rupees * 100;
+  // Remove any decimal places
+  $paise = intval($paise);
+  return $paise;
+}
+
+function createRazorOrder($receipt, $amount, $notes){ 
+  require_once(__DIR__.'/../subscription/razorpay-php-2.8.7/Razorpay.php');
+  $api = new Razorpay\Api\Api($_ENV['RP_KEY_ID'], $_ENV['RP_KEY_SECRET']);
+  return $api->order->create([
+    'receipt'         => $receipt,
+    'amount'          => razorpayAmount($amount), // amount in the smallest currency unit
+    'currency'        => 'INR',// <a href="/docs/payments/payments/international-payments/#supported-currencies" target="_blank">See the list of supported currencies</a>.)
+    'notes'           => $notes
+    ]);
+}
 
 
 // For verfication of webhook
@@ -191,122 +320,3 @@ function createWebhookTransaction($status){
   }
   
 }
-
-// after payment confirmation using webhook 
-// update the user with active subscription plan
-function setupUserSubscribedPlan($obj){
-  $subs = new StdClass();
-  $subs->user_id              = $obj->payload->payment->entity->notes->user_id;
-  $subs->email                = $obj->payload->payment->entity->notes->user_email;
-  $subs->sub_plan_id          = $obj->payload->payment->entity->notes->plan_id;
-  $subs->sub_plan_details     = $obj->payload->payment->entity->notes->plan;
-  $subs->sub_start_date       = Date('Y-m-d H:i:s');
-  $time                       = strtotime($subs->sub_start_date);
-  $duration                   = getPlanDuration($subs->sub_plan_details);
-  $subs->sub_end_date         = date("Y-m-d H:i:s", strtotime("+$duration day", $time));
-  $subs->subscription_status  = 'active';
-
-  try {
-    return insertSubscription($subs);
-  }
-  //catch exception
-  catch(Exception $e) {
-    error_log('ERROR::USER_SUBSCRIPTIONS_INSERT:: '.$e->getMessage());
-    $isDuplicateRow = isDuplicateError($e->getMessage());
-    $orderId = $obj->payload->payment->entity->order_id;
-    $paymentId = $obj->payload->payment->entity->id;
-    if($isDuplicateRow[0]) {
-      $log = "PREPAID_SUBSCRIPTION_ADDED::user[".$subs->email."] ".$isDuplicateRow[1].' order_id:['.$orderId.'] payment_id['.$paymentId.']'.PHP_EOL.
-      ' plan_id['.$subs->sub_plan_id.'] plan_details['.$subs->sub_plan_details.'] start_date['.$subs->sub_start_date.'] end_date['.$subs->sub_end_date.']'.PHP_EOL;
-      applog($log);
-      // get plan duration using sub_plan_details
-      $subs->plan_duration        = getPlanDuration($subs->sub_plan_details);
-      $subs->subscription_status  = 'queued';
-      $subs->order_id             = $orderId;
-      $subs->payment_id           = $paymentId;
-      $bool = insertPrepaidSubscription($subs);
-      // if could not insert to prepaid_subsctiptions also then log the error but return true;
-      if(!$bool) {
-        applog('PREPAID_SUBSCRIPTION_INSERT_FAIL::'.json_encode($obj));
-      }
-      return true;
-    }
-    return false;
-  } 
-}
-
-function planTitles() {
-  $plans = array_keys(getPlan());
-  return $plans;
-}
-
-function getPlanDuration($planCode) {
-  $plan = getPlan($planCode);
-  return ($plan) ? $plan['duration'] : 0;
-}
-
-function getPlan($plan = null) {
-  $subscriptionPlans = [
-    "trial" => ["id"=> 1, "price"=>0, "duration" => 7, "name"=>"7 Day Trial","description"=>"Full access to features for a Trial period of 7 Working Days"],
-    "monthly" => ["id"=> 2, "price"=>199,"duration" => 30, "name"=>"Monthly","description"=>"Full access to features for a Month"],
-    "half-yearly" => ["id"=> 3, "price"=>999,"duration" => 182, "name"=>"Half Yearly","description"=>"Full access to features for a period of 6 Months"],
-    "yearly" => ["id"=> 4, "price"=>1999,"duration" => 365, "name"=>"Yearly","description"=>"Full access to features for a period of 1 Year"],
-  ];
-  if (isset($subscriptionPlans[$plan])){    return $subscriptionPlans[$plan]; }
-
-  return ($plan && isset($subscriptionPlans[$plan])) ? $subscriptionPlans[$plan] : $subscriptionPlans;
-}
-
-function razorpayAmount($rupees) {
-  // Multiply the rupees by 100 to convert to paise
-  $paise = $rupees * 100;
-  // Remove any decimal places
-  $paise = intval($paise);
-  return $paise;
-}
-
-function createRazorOrder($receipt, $amount, $notes){ 
-  require_once(__DIR__.'/../subscription/razorpay-php-2.8.7/Razorpay.php');
-  $api = new Razorpay\Api\Api($_ENV['RP_KEY_ID'], $_ENV['RP_KEY_SECRET']);
-  return $api->order->create([
-    'receipt'         => $receipt,
-    'amount'          => razorpayAmount($amount), // amount in the smallest currency unit
-    'currency'        => 'INR',// <a href="/docs/payments/payments/international-payments/#supported-currencies" target="_blank">See the list of supported currencies</a>.)
-    'notes'           => $notes
-    ]);
- }
-
-//To check if the error is a duplicate error 
-//  return [boolean, email_if_matched]
-//GTP: Using PHP write me a method, which on matching this error string "SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'kanhailal2010@gmail.com' for key 'subscriptions.email'" will return an array. The email in the error string can change but rest of the string has to be compared. On matching the method should return an array with first element as true and second element as the email for which error occurred.
-function isDuplicateError($errorString) {
-  $pattern = "/SQLSTATE\[23000\]: Integrity constraint violation: 1062 Duplicate entry '(.+)' for key 'subscriptions.email'/";
-  
-  // Perform regex match
-  if (preg_match($pattern, $errorString, $matches)) {
-      // Extract the email from the matched string
-      $email = $matches[1];
-
-      // Return an array indicating a match and the email
-      return [true, $email];
-  } else {
-      // No match found
-      return [false, null];
-  }
-}
-// // Example usage:
-// $errorString = "SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'kanhailal2010@gmail.com' for key 'subscriptions.email'";
-// $result = matchErrorString($errorString);
-// echo '<pre>'.print_r($result, true).'</pre>';
-// $errorString = "SQLSTATE[23005]: Integrity coint violation: 1062 Duplicate entry 'kanhailal2010@gmail.com' for key 'subscriptions.email'";
-// $result = matchErrorString($errorString);
-// echo '<pre>'.print_r($result, true).'</pre>';
-// $errorString = "SQLSTATE[23002]: Integrity constraint violation: 1062 Duplicate entry 'kanhailal2010@gmail.com' for key 'subscriptions.email'";
-// $result = matchErrorString($errorString);
-// echo '<pre>'.print_r($result, true).'</pre>';
-// $errorString = "SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'kanhailal4488@gmail.com' for key 'subscriptions.email'";
-// $result = matchErrorString($errorString);
-// echo '<pre>'.print_r($result, true).'</pre>';
-// $errorString = "SQLSTATE[23000]: Integrity constraint violation: 1062  entry 'kanhailal4488@gmail.com' for key 'subscriptions.email'";
-// $result = matchErrorString($errorString);
-// echo '<pre>'.print_r($result, true).'</pre>';
