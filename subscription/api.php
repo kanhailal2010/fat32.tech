@@ -50,6 +50,7 @@ if(isset($_REQUEST['check_subscription']) && !empty($_REQUEST['check_subscriptio
   // Example usage
   $email = str_replace('"','',$_REQUEST['email']);
   $subscription = getUserSubscriptionDetails($email);
+  // debug($subscription);
   // if subscription details [not_found/inactive] but user details exist in users table
   // check prepaid_subscriptions (maybe trial subscription has ended)
   if($subscription[0] == false && isset($subscription[2])) {
@@ -75,9 +76,10 @@ if(isset($_REQUEST['check_subscription']) && !empty($_REQUEST['check_subscriptio
   // extendUserSubscription(1, -2);
   if ($subscription[0] !== false) {
     // check date of end subs else mark inactive
-    $today = strtotime(Date('Y-m-d'));
+    $today = strtotime(Date('Y-m-d H:i:s'));
     $sub_end = strtotime($subscription[1]['sub_end_date']);
-    if($today < $sub_end){
+
+    if($today > $sub_end){
       echo json_encode($res);
       exit();
     }

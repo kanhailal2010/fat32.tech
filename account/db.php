@@ -195,199 +195,27 @@ function changePassword($email, $password) {
   }
 }
 
-//  =================================================================================
-//  ==========================      ORDER METHODS        ============================
-//  =================================================================================
-// 1) There will be two order_transactions , One for create order and another for payment order.
-// 2) Create order transaction will be created along with a record in orders table.
-// 3) Paid order transaction will be created using webhook.
-
-// generate order_id for a user.
-// TODO: FIXME: This method is recursive 
-function generateReceiptId($userId) {
-  global $db, $debug;
-  // Generate a random order ID
-  $receiptId = 'fat_'.$userId.uniqid();
-
-  // Check if the generated order ID already exists in the database
-  $query = "SELECT COUNT(*) FROM orders WHERE receipt = :receipt_id AND user_id=:user_id";
-  $statement = $db->prepare($query);
-  $statement->bindParam(':receipt_id', $receiptId);
-  $statement->bindParam(':user_id', $userId);
-  $statement->execute();
-  $rowCount = $statement->fetchColumn();
-
-  // If the order ID already exists, generate a new one until a unique one is found
-  if ($rowCount > 0) {
-      return generateReceiptId();
+// Function to check for an active subscription
+function getUserSubscriptionDetails($email) {
+  global $db;
+  $res = [];
+  $result = getUserByEmail($email);
+  if ($result) {
+    $userId = $result['id'];
+    // Then, check for an active subscription for the user
+    $query = $db->prepare("SELECT * FROM subscriptions WHERE user_id = :userId AND subscription_status = 'active' ");// sub_end_date >= NOW()");
+    $query->bindParam(':userId', $userId);
+    $query->execute();
+    $subscription = $query->fetch(PDO::FETCH_ASSOC);
+    // var_dump($subscription);
+    // return [true, $subscription];
+    return ($subscription !== false) ? [true, $subscription, $result] : [false, 'Subscription details not found', $result];
   }
-
-  return $receiptId;
-}
-
-function insertUserOrder($data) {
-  global $db, $debug;
-  try {
-    $query = $db->prepare("INSERT INTO orders (receipt, pg_order_id, user_id, order_date, order_status, order_notes, total_amount, transaction_id, billing_address) VALUES (:receipt, :pg_order_id, :user_id, :order_date, :order_status, :order_notes, :total_amount, :transaction_id, :billing_address) ");
-    return $query->execute([
-      "receipt" => $data->receipt,
-      "pg_order_id" => $data->pg_order_id,
-      "user_id" => $data->user_id,
-      "order_date" => $data->order_date,
-      "order_status" => $data->order_status,
-      "order_notes" => isset($data->order_notes) ? json_encode($data->order_notes) : [] ,
-      "total_amount" => $data->total_amount,
-      "transaction_id" => $data->transaction_id,
-      "billing_address" => $data->billing_address
-    ]);
+  else {
+    return [false, 'User not found'];
   }
-  //catch exception
-  catch(Exception $e) {
-    error_log($e->getMessage());
-    if($debug) { echo 'Message: ' .$e->getMessage(); }
-    else {
-      return "DB Error:: Could not Insert Order";
-    }
-  } 
+  return [false, 'No details found']; // User not found
 }
-
-// webhook transaction will mark the paid/failed transaction 
-function orderPaidWebhookTransaction($data){
-  global $db,$debug;
-  $insertData   = new StdClass();
-  $insertData->order_id          = $data->payload->payment->entity->order_id;
-  $insertData->payment_id        = $data->payload->payment->entity->id;
-  $insertData->signature         = null;
-  $insertData->method            = $data->payload->payment->entity->method;
-  $insertData->user_email        = $data->payload->payment->entity->email;
-  $insertData->user_phone        = $data->payload->payment->entity->contact;
-  $insertData->payment_status    = $data->payload->payment->entity->status;
-  $insertData->payment_amount    = $data->payload->payment->entity->amount;
-  $insertData->order_status      = isset($data->payload->order) ? $data->payload->order->entity->status : 'paid';
-  $insertData->order_amount      = isset($data->payload->order) ? $data->payload->order->entity->amount : ($data->payload->payment->entity->amount - $data->payload->payment->entity->fee);
-  $insertData->transaction_data  = json_encode($data);
-
-  // update order status to paid
-  $order = new StdClass();
-  $order->order_id      = $insertData->order_id;
-  $order->order_status  = 'paid';
-  updateOrderStatus($order);
-
-  return insertOrderTransaction($insertData);
-}
-
-function insertOrderCreateTransaction($order){
-  $insertData = new StdClass();
-  $insertData->order_id          = $order->id;
-  $insertData->payment_id        = null;
-  $insertData->signature         = null;
-  $insertData->method            = null;
-  $insertData->user_email        = $order->notes->user_email;
-  $insertData->user_phone        = null;
-  $insertData->payment_status    = null;
-  $insertData->payment_amount    = null;
-  $insertData->order_status      = $order->status;
-  $insertData->order_amount      = $order->amount;
-  $insertData->transaction_data  = json_encode($order);
-  return insertOrderTransaction($insertData);
-}
-
-
-function insertOrderCompleteTransaction($transaction){
-  $insertData = new StdClass();
-  $insertData->order_id          = $transaction->order_id;
-  $insertData->payment_id        = $transaction->payment_id;
-  $insertData->signature         = $transaction->signature;
-  $insertData->method            = null;
-  $insertData->user_email        = null;
-  $insertData->user_phone        = null;
-  $insertData->payment_status    = 'verified_signature';
-  $insertData->payment_amount    = 'verified_signature';
-  $insertData->order_status      = 'paid';
-  $insertData->order_amount      = 0;
-  $insertData->transaction_data  = json_encode($transaction);
-  return insertOrderTransaction($insertData);
-}
-
-
-function insertOrderTransaction($data){
-  global $db,$debug;
-  try {
-    $sql = "INSERT INTO order_transactions (id, order_id, payment_id, signature, method, user_email, user_phone, payment_status, payment_amount, order_status, order_amount, transaction_data, created_at) ";
-    $sql .= " VALUES (null, :order_id, :payment_id, :signature, :method, :user_email, :user_phone, :payment_status, :payment_amount, :order_status, :order_amount, :transaction_data, :created_at) ";
-    return $db->prepare($sql)->execute([
-      'order_id'          => $data->order_id,
-      'payment_id'        => $data->payment_id,
-      'signature'         => $data->signature,
-      'method'            => $data->method,
-      'user_email'        => $data->user_email,
-      'user_phone'        => $data->user_phone,
-      'payment_status'    => $data->payment_status,
-      'payment_amount'    => $data->payment_amount,
-      'order_status'      => $data->order_status,
-      'order_amount'      => $data->order_amount,
-      'transaction_data'  => $data->transaction_data,
-      'created_at'        => Date('Y-m-d H:i:s'),
-    ]);
-  }
-  //catch exception
-  catch(Exception $e) {
-    error_log($e->getMessage());
-    if($debug) { echo 'Message: ' .$e->getMessage(); }
-    else {
-      return "DB Error:: Could not Insert Webhook data";
-    }
-  } 
-}
-
-function updateOrderStatus($data){
-  global $db,$debug;
-  try {
-    $sql = "UPDATE orders SET order_status=:order_status WHERE pg_order_id=:order_id";
-    return $db->prepare($sql)->execute([
-      'order_id'          => $data->order_id,
-      'order_status'      => $data->order_status
-    ]);
-  }
-  //catch exception
-  catch(Exception $e) {
-    error_log($e->getMessage());
-    if($debug) { echo 'DB Error:: Could not update orders table::' .$e->getMessage(); }
-    else {
-      return false;
-    }
-  } 
-}
-
-function getUsersPaidOrders($userId) {
-  global $db,$debug;
-  try {
-    $sql = "SELECT id, pg_order_id, order_date, order_status, total_amount FROM orders WHERE user_id=:user_id AND order_status=:order_status ORDER BY id DESC";
-
-    $stmt = $db->prepare($sql);
-    // $stmt->bindParam('user_id', $userId);
-    // $stmt->bindParam('order_status', 'paid');
-    if($stmt->execute([
-      'user_id'       => $userId,
-      'order_status'  => 'paid'
-    ])) {
-      return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-    else {
-      return [];
-    }
-
-  }
-  //catch exception
-  catch(Exception $e) {
-    error_log($e->getMessage());
-    if($debug) { echo 'DB Error:: Could not get users orders ::' .$e->getMessage(); }
-    else {
-      return false;
-    }
-  } 
-}
-
 
 // QUERY LOGGING
 // SET global log_output = 'FILE';
