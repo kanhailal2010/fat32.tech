@@ -32,9 +32,6 @@ require_once(__DIR__.'/payment_methods.php');
  */
 $checkedPrepaidSubscriptions = false;
 if(isset($_REQUEST['check_subscription']) && !empty($_REQUEST['check_subscription'])) {
-  $js = '{"event":"payment.captured","entity":"event","payload":{"payment":{"entity":{"id":"pay_N7mLQCwEsgtIYm","fee":470,"tax":72,"upi":{"vpa":"success@razorpay"},"vpa":"success@razorpay","bank":null,"email":"kanhailal4488@gmail.com","notes":{"plan":"monthly","plan_id":"2","user_id":"2","user_email":"dribvul@gmail.com","payment_for":"monthly Subscription"},"amount":20370,"entity":"payment","method":"upi","status":"captured","wallet":null,"card_id":null,"contact":"+919008654469","captured":true,"currency":"INR","order_id":"order_N7mLEkGWbnFOE3","created_at":1701586025,"error_code":null,"error_step":null,"invoice_id":null,"base_amount":20370,"description":"monthly Subscription","error_reason":null,"error_source":null,"acquirer_data":{"rrn":"688356758697","upi_transaction_id":"D6D4A5194B66D90290207B0E7B7169F2"},"international":false,"refund_status":null,"amount_refunded":0,"error_description":null}}},"contains":["payment"],"account_id":"acc_GBFhCy62gdEPz1","created_at":1701586026}';
-  $js = json_decode($js);
-  setupUserSubscribedPlan($js);
   $res = [];
   $res['status'] = false;
   // if($_ENV['DEBUG']) { $res['server'] = $_SERVER;}

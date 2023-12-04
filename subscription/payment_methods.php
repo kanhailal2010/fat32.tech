@@ -1,6 +1,14 @@
 <?php 
 include_once(__DIR__.'/../account/db.php');
 
+/**
+ * Changing subscription plans: 
+ *    we just need to update the sub_end_date in subscription table
+ *    plans will have a duration(days) column 
+ * 
+ * Trial plan gets activated on the day the user signs up
+ */
+
 // =========================================================================================
 // ========================= Subscription PLAN Methods =====================================
 // =========================================================================================
@@ -143,7 +151,7 @@ function setupUserSubscribedPlan($obj){
       ' plan_id['.$subs->sub_plan_id.'] plan_details['.$subs->sub_plan_details.'] start_date['.$subs->sub_start_date.'] end_date['.$subs->sub_end_date.']'.PHP_EOL;
       applog($log);
       // get plan duration using sub_plan_details
-      $subs->plan_duration        = getPlanDuration($subs->sub_plan_details);
+      $subs->sub_plan_duration    = getPlanDuration($subs->sub_plan_details);
       $subs->subscription_status  = 'queued';
       $subs->order_id             = $orderId;
       $subs->payment_id           = $paymentId;
