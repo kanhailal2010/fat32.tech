@@ -42,7 +42,7 @@ function createVerifiedUserIfDoesNotExist($user){
   if($userOld && !$userOld['active']) {
     updateActiveStatusOfUser($userOld['id'], true);
   }
-  return [true, 'User already exist'];
+  return [true, $userOld];
 }
 
 function updateActiveStatusOfUser($userId){
@@ -300,14 +300,15 @@ function getUsersPaidOrders($userId) {
 //   `user_id` int NOT NULL,
 //   `email` varchar(255) DEFAULT NULL,
 //   `sub_plan_id` int DEFAULT '1',
-//   `sub_plan_details` varchar(255) NOT NULL,
+//   `sub_plan_code` varchar(100) NOT NULL,
+//   `sub_plan_details` varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
 //   `sub_start_date` datetime DEFAULT CURRENT_TIMESTAMP,
 //   `sub_end_date` datetime DEFAULT NULL,
 //   `subscription_status` enum('active','inactive','cancelled') NOT NULL DEFAULT 'inactive',
 //   PRIMARY KEY (`id`),
 //   UNIQUE KEY `email` (`email`)
 // )
-// insert into subscriptions (id, user_id, name, email, sub_plan_id, sub_plan_details, sub_start_date, sub_end_date,subscription_status) VALUES (null,'00004', 'Kanhai', 'kanhailal2010@gmail.com', 1, 'plan details', null, null, 'inactive');
+// insert into subscriptions (id, user_id, name, email, sub_plan_id, sub_plan_details, sub_start_date, sub_end_date,subscription_status) VALUES (null,'00004', 'Kanhai', 'kanhailal2010@gmail.com', 1, 'TX_TRIAL', '2023-11-12', '2023-12-12', 'inactive');
 // select * from subscriptions where email='kanhailal2010@gmail.com' limit 5;
 // update subscriptions set subscription_status = 'active' where user_id = 4;
 
@@ -318,7 +319,8 @@ function getUsersPaidOrders($userId) {
 //   `order_id` varchar(50) NOT NULL,
 //   `payment_id` varchar(50) NOT NULL,
 //   `sub_plan_id` int DEFAULT '1',
-//   `sub_plan_details` varchar(255) NOT NULL,
+//   `sub_plan_duration` int NOT NULL DEFAULT '0',
+//   `sub_plan_code` varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
 //   `sub_start_date` date DEFAULT NULL,
 //   `sub_end_date` date DEFAULT NULL,
 //   `subscription_status` enum('queued','exhausted','cancelled') NOT NULL DEFAULT 'queued',

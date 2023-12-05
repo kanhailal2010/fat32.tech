@@ -11,9 +11,9 @@ $order_id = '';
 if(isset($_POST['selected_plan']) && verifyCaptcha()) {
   $response         = new StdClass();
   $response->status = false;
-  $selectedPlan     = sanitizeInput($_POST['subscription_plan'], 'username');
+  $selectedPlan     = sanitizeInput($_POST['subscription_plan_code'], 'username');
   $selectedPlanId   = sanitizeInput($_POST['subscription_plan_id'], 'number');
-  if(!isset($_POST['subscription_plan']) || !in_array($selectedPlan, planTitles())) {
+  if(!isset($_POST['subscription_plan_code']) || !in_array($selectedPlan, planCodes())) {
     $response->msg = "Invalid subscription plan";
     echo json_encode($response);
     exit();
@@ -29,7 +29,7 @@ if(isset($_POST['selected_plan']) && verifyCaptcha()) {
     $notes      = [
       'user_id'     => $user_id,
       'user_email'  => $user_email,
-      'plan'        => $selectedPlan,
+      'plan_code'   => $selectedPlan,
       'plan_id'     => $selectedPlanId
     ];
 
@@ -54,7 +54,7 @@ if(isset($_POST['selected_plan']) && verifyCaptcha()) {
       'notes'           => [ 
         "user_email" => $order->notes->user_email,
         "user_id"    => $order->notes->user_id,
-        "plan"       => $order->notes->plan,
+        "plan_code"  => $order->notes->plan_code,
         "plan_id"    => $order->notes->plan_id
       ],
       'created_at'      => $order->created_at

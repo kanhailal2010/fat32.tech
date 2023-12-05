@@ -2,8 +2,8 @@
 require_once(__DIR__.'/ac_util.php');
 require_once(__DIR__.'/db.php');
 
-// echo str_repeat('<br/>', 10);
-// print_r($_REQUEST);
+// debug($_REQUEST);
+// debug($_SESSION);
 
 requireLogin();
 

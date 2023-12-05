@@ -1,17 +1,25 @@
 <?php 
 $email = getSessionValue('user_email', null);
 $user = getUserByEmail($email);
-$statusClass  = $user['active'] ? 'success' : 'danger';
-$statusTxt    = $user['active'] ? 'ACTIVE' : 'INACTIVE';
+$accountStatusClass = $user['active'] ? 'success' : 'danger';
+$accountStatus      = $user['active'] ? 'ACTIVE' : 'INACTIVE';
+saveToCache('account_status', $accountStatus);
 
 $subscription = getUserSubscriptionDetails($email);
+saveToCache('subscription',$subscription[1]);
+
 // debug($user);
 // debug($subscription);
-$subClass     = isset($subscription[1]['subscription_status']) && $subscription[1]['subscription_status'] == 'active' ? 'success' : 'danger';
-$subTxt       = isset($subscription[1]['subscription_status']) ? $subscription[1]['subscription_status'] : 'INACTIVE';
+$subClass       = isset($subscription[1]['subscription_status']) && $subscription[1]['subscription_status'] == 'active' ? 'success' : 'danger';
+$subTxt         = isset($subscription[1]['subscription_status']) ? $subscription[1]['subscription_status'] : 'INACTIVE';
 
-$endDate      = isset($subscription[1]['sub_end_date']) ? $subscription[1]['sub_end_date'] : Date('Y-m-d H:i:s');
-$subEndingIn  = daysRemaining($endDate);
+$endDate        = isset($subscription[1]['sub_end_date']) ? $subscription[1]['sub_end_date'] : Date('Y-m-d H:i:s');
+$subEndingIn    = daysRemaining($endDate);
+$endDateDisp    = Date('Y-m-d', strtotime($endDate));
+
+$queuedDuration = getQueuedSubscriptionDays($user['id']);
+$totalDuration  = $subEndingIn + $queuedDuration;
+$subEndingIn    = $queuedDuration > 0 ? "$subEndingIn + ($queuedDuration Days queued)": $subEndingIn;
 ?>
 <!-- Begin Page Content -->
 <div class="container-fluid dashboard">
@@ -24,10 +32,10 @@ $subEndingIn  = daysRemaining($endDate);
     <!-- Content Row -->
     <div class="row">
         <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card bg-<?=$statusClass?> text-white shadow">
+            <div class="card bg-<?=$accountStatusClass?> text-white shadow">
                 <div class="card-body">
                     Account Status
-                    <div class="text-white-50 small text-uppercase"><?=$statusTxt?></div>
+                    <div class="text-white-50 small text-uppercase"><?=$accountStatus?></div>
                 </div>
             </div>
         </div>
@@ -36,7 +44,10 @@ $subEndingIn  = daysRemaining($endDate);
             <div class="card bg-<?=$subClass?> text-white shadow">
                 <div class="card-body">
                     Subscription Status
-                    <div class="text-white-50 small text-uppercase"><?=$subTxt?></div>
+                    <div class="text-white-50 small text-uppercase">
+                      <?=$subTxt?>
+                      <span class="float-right">Ends: <?=$endDateDisp?></span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -73,6 +84,25 @@ $subEndingIn  = daysRemaining($endDate);
             </div>
         </div> -->
 
+    </div> <!-- row -->
+    
+    <div class="row">
+      <div class="col-6">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Pending Actions</h6>
+            </div>
+            <div class="card-body">
+              <p>Your subsciption to Extension is ending in <?=$totalDuration?> Days!!. Renew it soon. </p>
+              <a href="<?php echo siteUrl('subscription');?>" class="btn btn-light btn-icon-split btn-lg">
+                  <span class="icon text-gray-600">
+                      <i class="fas fa-shopping-cart"></i>
+                  </span>
+                  <span class="text">Renew Now!</span>
+              </a>
+            </div>
+        </div>
+      </div>
     </div> <!-- row -->
 
     <!-- Content Row -->

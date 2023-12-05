@@ -11,15 +11,15 @@
         <img src="https://s22.postimg.cc/8mv5gn7w1/paper-plane.png" alt="" class="pricing-img">
         <h2 class="pricing-header">Personal</h2>
         <ul class="pricing-features">
-          <li class="pricing-features-item">Custom domains</li>
-          <li class="pricing-features-item">Sleeps after 30 mins of inactivity</li>
+          <li class="pricing-features-item">Monthly Access</li>
+          <li class="pricing-features-item">Full access to features for a Month.</li>
         </ul>
         <span class="pricing-price">&#8377;199/-</span>
         <?php if(!isset($_SESSION['logged_in'])): ?>
         <a href="/login?redirect_to=<?php echo urlencode(siteUrl('subscription/plans'));?>" class="button-30">Sign up</a>
         <?php else: ?>
         <form action="/subscription/checkout" method="post">
-          <input type="hidden" value="monthly" id="subscription_plan" name="subscription_plan"/>
+          <input type="hidden" value="monthly" id="subscription_plan_code" name="subscription_plan_code"/>
           <input type="hidden" value="2" id="subscription_plan_id" name="subscription_plan_id"/>
           <input type="hidden" value="" id="plan1" name="recaptcha_response" />
         <button type="submit" name="selected_plan" value="monthly" class="button-30">Buy Monthly</button>
@@ -55,7 +55,7 @@
       </div> <!-- col-10 -->
 
       <div class="col"></div>
-      
+
     </div><!-- row -->
   </section>
 </div><!-- background -->

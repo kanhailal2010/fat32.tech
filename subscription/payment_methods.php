@@ -9,33 +9,6 @@ include_once(__DIR__.'/../account/db.php');
  * Trial plan gets activated on the day the user signs up
  */
 
-// =========================================================================================
-// ========================= Subscription PLAN Methods =====================================
-// =========================================================================================
-
-
-function planTitles() {
-  $plans = array_keys(getPlan());
-  return $plans;
-}
-
-function getPlanDuration($planCode) {
-  $plan = getPlan($planCode);
-  return ($plan) ? $plan['duration'] : 0;
-}
-
-function getPlan($plan = null) {
-  $subscriptionPlans = [
-    "trial" => ["id"=> 1, "price"=>0, "duration" => 7, "name"=>"7 Day Trial","description"=>"Full access to features for a Trial period of 7 Working Days"],
-    "monthly" => ["id"=> 2, "price"=>199,"duration" => 30, "name"=>"Monthly","description"=>"Full access to features for a Month"],
-    "half-yearly" => ["id"=> 3, "price"=>999,"duration" => 182, "name"=>"Half Yearly","description"=>"Full access to features for a period of 6 Months"],
-    "yearly" => ["id"=> 4, "price"=>1999,"duration" => 365, "name"=>"Yearly","description"=>"Full access to features for a period of 1 Year"],
-  ];
-  if (isset($subscriptionPlans[$plan])){    return $subscriptionPlans[$plan]; }
-
-  return ($plan && isset($subscriptionPlans[$plan])) ? $subscriptionPlans[$plan] : $subscriptionPlans;
-}
-
 // ====================================================================================
 // ========================= Subscription Methods =====================================
 // ====================================================================================
@@ -43,14 +16,14 @@ function getPlan($plan = null) {
 // insert subscription row for user
 function insertSubscription($data){
   global $db,$debug;
-  $sql = "INSERT INTO subscriptions (user_id, email, sub_plan_id, sub_plan_details, sub_start_date, sub_end_date, subscription_status) ";
+  $sql = "INSERT INTO subscriptions (user_id, email, sub_plan_id, sub_plan_code, sub_start_date, sub_end_date, subscription_status) ";
   $sql .= " VALUES ";
-  $sql .= "(:user_id, :email, :sub_plan_id, :sub_plan_details, :sub_start_date, :sub_end_date, :subscription_status) ";
+  $sql .= "(:user_id, :email, :sub_plan_id, :sub_plan_code, :sub_start_date, :sub_end_date, :subscription_status) ";
   return $db->prepare($sql)->execute([
     'user_id'             => $data->user_id,
     'email'               => $data->email,
     'sub_plan_id'         => $data->sub_plan_id,
-    'sub_plan_details'    => $data->sub_plan_details,
+    'sub_plan_code'       => $data->sub_plan_code,
     'sub_start_date'      => $data->sub_start_date,
     'sub_end_date'        => $data->sub_end_date,
     'subscription_status' => $data->subscription_status,
@@ -60,9 +33,9 @@ function insertSubscription($data){
 // insert subscription row for user
 function insertPrepaidSubscription($data){
   global $db,$debug;
-  $sql = "INSERT INTO prepaid_subscriptions (user_id, email, order_id, payment_id, sub_plan_id, sub_plan_duration, sub_plan_details, sub_start_date, sub_end_date, subscription_status) ";
+  $sql = "INSERT INTO prepaid_subscriptions (user_id, email, order_id, payment_id, sub_plan_id, sub_plan_duration, sub_plan_code, sub_start_date, sub_end_date, subscription_status) ";
   $sql .= " VALUES ";
-  $sql .= "(:user_id, :email, :order_id, :payment_id, :sub_plan_id, :sub_plan_duration, :sub_plan_details, :sub_start_date, :sub_end_date, :subscription_status) ";
+  $sql .= "(:user_id, :email, :order_id, :payment_id, :sub_plan_id, :sub_plan_duration, :sub_plan_code, :sub_start_date, :sub_end_date, :subscription_status) ";
   try {
 
     return $db->prepare($sql)->execute([
@@ -73,7 +46,7 @@ function insertPrepaidSubscription($data){
       'payment_id'          => $data->payment_id,
       'sub_plan_id'         => $data->sub_plan_id,
       'sub_plan_duration'   => $data->sub_plan_duration,
-      'sub_plan_details'    => $data->sub_plan_details,
+      'sub_plan_code'       => $data->sub_plan_code,
       'sub_start_date'      => $data->sub_start_date,
       'sub_end_date'        => $data->sub_end_date,
       'subscription_status' => $data->subscription_status,
@@ -108,10 +81,10 @@ function setupUserSubscribedPlan($obj){
   $subs->user_id              = $obj->payload->payment->entity->notes->user_id;
   $subs->email                = $obj->payload->payment->entity->notes->user_email;
   $subs->sub_plan_id          = $obj->payload->payment->entity->notes->plan_id;
-  $subs->sub_plan_details     = $obj->payload->payment->entity->notes->plan;
+  $subs->sub_plan_code        = $obj->payload->payment->entity->notes->plan_code;
   $subs->sub_start_date       = Date('Y-m-d H:i:s');
   $time                       = strtotime($subs->sub_start_date);
-  $duration                   = getPlanDuration($subs->sub_plan_details);
+  $duration                   = getPlanDuration($subs->sub_plan_code);
   $subs->sub_end_date         = date("Y-m-d H:i:s", strtotime("+$duration day", $time));
   $subs->subscription_status  = 'active';
 
@@ -126,10 +99,10 @@ function setupUserSubscribedPlan($obj){
     $paymentId = $obj->payload->payment->entity->id;
     if($isDuplicateRow[0]) {
       $log = "PREPAID_SUBSCRIPTION_ADDED::user[".$subs->email."] ".$isDuplicateRow[1].' order_id:['.$orderId.'] payment_id['.$paymentId.']'.PHP_EOL.
-      ' plan_id['.$subs->sub_plan_id.'] plan_details['.$subs->sub_plan_details.'] start_date['.$subs->sub_start_date.'] end_date['.$subs->sub_end_date.']'.PHP_EOL;
+      ' plan_id['.$subs->sub_plan_id.'] plan_details['.$subs->sub_plan_code.'] start_date['.$subs->sub_start_date.'] end_date['.$subs->sub_end_date.']'.PHP_EOL;
       applog($log);
-      // get plan duration using sub_plan_details
-      $subs->sub_plan_duration    = getPlanDuration($subs->sub_plan_details);
+      // get plan duration using sub_plan_code
+      $subs->sub_plan_duration    = getPlanDuration($subs->sub_plan_code);
       $subs->subscription_status  = 'queued';
       $subs->order_id             = $orderId;
       $subs->payment_id           = $paymentId;
@@ -410,7 +383,7 @@ function insertOrderCompleteTransaction($transaction){
   $insertData->user_email        = null;
   $insertData->user_phone        = null;
   $insertData->payment_status    = 'verified_signature';
-  $insertData->payment_amount    = 'verified_signature';
+  $insertData->payment_amount    = null;
   $insertData->order_status      = 'paid';
   $insertData->order_amount      = 0;
   $insertData->transaction_data  = json_encode($transaction);

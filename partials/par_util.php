@@ -180,13 +180,13 @@ function googleLoginButton($buttonTitle=''){
       $google_oauth2 = new Google_Service_Oauth2($client);
       $google_user = $google_oauth2->userinfo->get();
       $_SESSION['logged_in'] = true;
-      $_SESSION['user_id'] = $google_user->id;
+      // $_SESSION['user_id'] = $google_user->id;
       $_SESSION['user_email'] = $google_user->email;
       $_SESSION['user_name'] = isset($google_user->name) ? $google_user->name : $google_user->email;
       $_SESSION['user_photo'] = $google_user->picture;
 
       $user = new StdClass();
-      $user->id               = $google_user->id;
+      $user->google_id        = $google_user->id;
       $user->email            = $google_user->email;
       $user->name             = isset($google_user->name) ? $google_user->name : $google_user->email;
       $user->picture          = $google_user->picture;
@@ -196,7 +196,11 @@ function googleLoginButton($buttonTitle=''){
       $user->verification_code= null;
       $user->active           = 1;
       $res = createVerifiedUserIfDoesNotExist($user);
-      if($res[0]) { loginRedirectTo(SITE_URL."account",true); }
+      // if user exist and correct credentials entered
+      if($res[0]) { 
+        $_SESSION['user_id'] = $res[1]['id'];
+        loginRedirectTo(SITE_URL."account",true); 
+      }
       // print "id:				".$user->id."\n";
       // //print '<img src="'.$user->picture.'" style="float: right;margin-top: 33px;" />'."\n\n";
       // print "email:			".$user->email."\n";
@@ -405,4 +409,40 @@ function fieldsNotEmpty($fields, $exclude=[]) {
     }
   }
   return true;
+}
+
+// =========================================================================================
+// ========================= Subscription PLAN Methods =====================================
+// =========================================================================================
+
+
+function planCodes() {
+  $plans = array_keys(getPlan());
+  return $plans;
+}
+
+function getPlanDuration($planCode) {
+  $plan = getPlan($planCode);
+  return ($plan) ? $plan['duration'] : 0;
+}
+
+function getPlan($plan = null) {
+  $subscriptionPlans = [
+    "TR_TRIAL" => ["id"=> 1, "price"=>0, "duration" => 7, "name"=>"Trading Extension - 7 Day Trial","description"=>"Full access to features for a Trial period of 7 Working Days"],
+    "TR_EXT_M" => ["id"=> 2, "price"=>199,"duration" => 30, "name"=>"Trading Extension - Monthly Plan","description"=>"Full access to features for a Month"],
+    "TR_EXT_HY" => ["id"=> 3, "price"=>999,"duration" => 182, "name"=>"Trading Extension - Half Yearly Plan","description"=>"Full access to features for a period of 6 Months"],
+    "TR_EXT_Y" => ["id"=> 4, "price"=>1999,"duration" => 365, "name"=>"Trading Extension - Yearly Plan","description"=>"Full access to features for a period of 1 Year"],
+  ];
+  if (isset($subscriptionPlans[$plan])){    return $subscriptionPlans[$plan]; }
+
+  return ($plan && isset($subscriptionPlans[$plan])) ? $subscriptionPlans[$plan] : $subscriptionPlans;
+}
+
+function saveToCache($key, $value){
+  $_SESSION[$key] = $value;
+  return $value;
+}
+
+function getFromCache($key){
+  return (!isset($_SESSION[$key])) ? "" : $_SESSION[$key];
 }

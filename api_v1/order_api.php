@@ -3,6 +3,7 @@
 require_once(__DIR__.'/../partials/par_util.php');
 require_once(__DIR__.'/../account/db.php');
 
+
 $user = getUserByEmail($_SESSION['user_email']);
 
 $orders = getUsersPaidOrders($user['id']);
