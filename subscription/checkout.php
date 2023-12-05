@@ -107,7 +107,8 @@ if(isset($_POST['selected_plan']) && verifyCaptcha()) {
       <?php if(!empty($order_id)): ?>
           <div class="panel pricing-table noflex">
             <h3 class="summary-header">Order Summary</h3>
-            <div class="summary-table">
+            <hr/>
+            <div class="summary-table mt-50 mb-20">
               <div class="pricing-feature-item">
                 <?php echo $order_details['notes']['plan_desc'];?> Subscription
               </div>
