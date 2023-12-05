@@ -98,7 +98,7 @@ function setupUserSubscribedPlan($obj){
     $orderId = $obj->payload->payment->entity->order_id;
     $paymentId = $obj->payload->payment->entity->id;
     if($isDuplicateRow[0]) {
-      $log = "PREPAID_SUBSCRIPTION_ADDED::user[".$subs->email."] ".$isDuplicateRow[1].' order_id:['.$orderId.'] payment_id['.$paymentId.']'.PHP_EOL.
+      $log = "ADDING_PREPAID_SUBSCRIPTION::user[".$subs->email."] ".$isDuplicateRow[1].' order_id:['.$orderId.'] payment_id['.$paymentId.']'.PHP_EOL.
       ' plan_id['.$subs->sub_plan_id.'] plan_details['.$subs->sub_plan_code.'] start_date['.$subs->sub_start_date.'] end_date['.$subs->sub_end_date.']'.PHP_EOL;
       applog($log);
       // get plan duration using sub_plan_code
@@ -106,11 +106,15 @@ function setupUserSubscribedPlan($obj){
       $subs->subscription_status  = 'queued';
       $subs->order_id             = $orderId;
       $subs->payment_id           = $paymentId;
-      $bool = insertPrepaidSubscription($subs);
-      // if could not insert to prepaid_subsctiptions also then log the error but return true;
-      if(!$bool) {
-        applog('PREPAID_SUBSCRIPTION_INSERT_FAIL::'.json_encode($obj));
+      try {
+        insertPrepaidSubscription($subs);
       }
+      catch(Exception $e) {
+        applog('PREPAID_SUBSCRIPTION_INSERT_FAIL::'.json_encode($obj));
+        applog('PREPAID_SUBSCRIPTION_INSERT_FAIL_REASON::'.$e->getMessage());
+      }
+      
+      // if could not insert to prepaid_subsctiptions also then log the error but return true;
       return true;
     }
     return false;

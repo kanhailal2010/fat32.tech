@@ -109,7 +109,7 @@ if(isset($_POST['selected_plan']) && verifyCaptcha()) {
             <h3 class="summary-header">Order Summary</h3>
             <div class="summary-table">
               <div class="pricing-feature-item">
-                <?php echo $order_details['notes']['plan_code'];?> Subscription
+                <?php echo $order_details['notes']['plan_desc'];?> Subscription
               </div>
               <div class="pricing-feature-item">
                 &#8377;<?php 
