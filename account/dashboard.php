@@ -15,7 +15,10 @@ $subTxt         = isset($subscription[1]['subscription_status']) ? $subscription
 
 $endDate        = isset($subscription[1]['sub_end_date']) ? $subscription[1]['sub_end_date'] : Date('Y-m-d H:i:s');
 $subEndingIn    = daysRemaining($endDate);
-$endDateDisp    = Date('Y-m-d', strtotime($endDate));
+$endDateTimeStamp = strtotime($endDate);
+$todayTimeStamp   = strtotime(Date('Y-m-d'));
+$endDateDisp    = Date('Y-m-d', $endDateTimeStamp);
+$endDateDisp    = ($todayTimeStamp > $endDateTimeStamp) ? "Ended:$endDateDisp" : "Ends:$endDateDisp";
 
 $queuedDuration = getQueuedSubscriptionDays($user['id']);
 $totalDuration  = $subEndingIn + $queuedDuration;
@@ -46,7 +49,7 @@ $subEndingIn    = $queuedDuration > 0 ? "$subEndingIn + ($queuedDuration Days qu
                     Subscription Status
                     <div class="text-white-50 small text-uppercase">
                       <?=$subTxt?>
-                      <span class="float-right">Ends: <?=$endDateDisp?></span>
+                      <span class="float-right"><?=$endDateDisp?></span>
                     </div>
                 </div>
             </div>
