@@ -1,4 +1,4 @@
-<?php 
+<?php
 $servername = $_ENV['DB_HOST'];
 $username = $_ENV['DB_USER'];
 $password = $_ENV['DB_PASS'];
@@ -39,7 +39,27 @@ function createVerifiedUserIfDoesNotExist($user){
     if(!$res) { return [false, 'Could not add user']; }    
     exit();
   }
+  if($userOld && !$userOld['active']) {
+    updateActiveStatusOfUser($userOld['id'], true);
+  }
   return [true, 'User already exist'];
+}
+
+function updateActiveStatusOfUser($userId){
+  global $db;
+  try{
+    $stmt = $db->prepare('UPDATE users SET active=? WHERE id=?');
+    $stmt->execute([1, $userId]);
+    return true;
+  }
+  //catch exception
+  catch(Exception $e) {
+    error_log($e->getMessage());
+    if($debug) { echo 'Message: ' .$e->getMessage(); }
+    else {
+      return false;
+    }
+  } 
 }
 
 function createUser($user){
