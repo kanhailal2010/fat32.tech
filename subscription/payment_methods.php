@@ -97,6 +97,8 @@ function setupUserSubscribedPlan($obj){
     $isDuplicateRow = isDuplicateErrorOnSubscription($e->getMessage());
     $orderId = $obj->payload->payment->entity->order_id;
     $paymentId = $obj->payload->payment->entity->id;
+    // debug('Is it duplicate row');
+    // debug($isDuplicateRow);
     if($isDuplicateRow[0]) {
       $log = "ADDING_PREPAID_SUBSCRIPTION::user[".$subs->email."] ".$isDuplicateRow[1].' order_id:['.$orderId.'] payment_id['.$paymentId.']'.PHP_EOL.
       ' plan_id['.$subs->sub_plan_id.'] plan_details['.$subs->sub_plan_code.'] start_date['.$subs->sub_start_date.'] end_date['.$subs->sub_end_date.']'.PHP_EOL;
@@ -126,7 +128,7 @@ function setupUserSubscribedPlan($obj){
 //  return [boolean, email_if_matched]
 //GTP: Using PHP write me a method, which on matching this error string "SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'kanhailal2010@gmail.com' for key 'subscriptions.email'" will return an array. The email in the error string can change but rest of the string has to be compared. On matching the method should return an array with first element as true and second element as the email for which error occurred.
 function isDuplicateErrorOnSubscription($errorString) {
-  $pattern = "/SQLSTATE\[23000\]: Integrity constraint violation: 1062 Duplicate entry '(.+)' for key 'subscriptions.email'/";
+  $pattern = "/SQLSTATE\[23000\]: Integrity constraint violation: 1062 Duplicate entry '(.+)' for key/";
   
   // Perform regex match
   if (preg_match($pattern, $errorString, $matches)) {
