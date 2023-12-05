@@ -1,3 +1,7 @@
+<?php 
+$paidPlans = getPaidPlans();
+// debug($paidPlans);
+?>
 <div class="background">
 <section id="plans" class="features-area">
 <div class="row">
@@ -6,28 +10,29 @@
   
     <div class="panel pricing-table flex">
       
-
+      <?php foreach($paidPlans as $code => $plan ): ?>
       <div class="pricing-plan">
-        <img src="https://s22.postimg.cc/8mv5gn7w1/paper-plane.png" alt="" class="pricing-img">
-        <h2 class="pricing-header">Personal</h2>
+        <img src="<?=siteUrl('assets/images/'.$plan['image']);?>" alt="" class="pricing-img">
+        <h2 class="pricing-header"><?=$plan['title']?></h2>
         <ul class="pricing-features">
-          <li class="pricing-features-item">Monthly Access</li>
-          <li class="pricing-features-item">Full access to features for a Month.</li>
+          <li class="pricing-features-item"><?=$plan['name']?></li>
+          <li class="pricing-features-item">Full access to features for <?=$plan['duration']?> Days.</li>
         </ul>
-        <span class="pricing-price">&#8377;199/-</span>
+        <span class="pricing-price">&#8377;<?=$plan['price']?>/-</span>
         <?php if(!isset($_SESSION['logged_in'])): ?>
         <a href="/login?redirect_to=<?php echo urlencode(siteUrl('subscription/plans'));?>" class="button-30">Sign up</a>
         <?php else: ?>
         <form action="/subscription/checkout" method="post">
-          <input type="hidden" value="monthly" id="subscription_plan_code" name="subscription_plan_code"/>
+          <input type="hidden" value="<?=$code?>" id="subscription_plan_code" name="subscription_plan_code"/>
+          <input type="hidden" value="<?=$plan['name']?>" id="subscription_plan_name" name="subscription_plan_name"/>
           <input type="hidden" value="2" id="subscription_plan_id" name="subscription_plan_id"/>
           <input type="hidden" value="" id="plan1" name="recaptcha_response" />
-        <button type="submit" name="selected_plan" value="monthly" class="button-30">Buy Monthly</button>
+        <button type="submit" name="selected_plan" value="monthly" class="button-30">Buy <?=$plan['title']?></button>
         </form>
         <?php endif; ?>
       </div>
-      
-      <div class="pricing-plan">
+      <?php endforeach; ?>
+      <!-- <div class="pricing-plan">
         <img src="https://s28.postimg.cc/ju5bnc3x9/plane.png" alt="" class="pricing-img">
         <h2 class="pricing-header">Small team</h2>
         <ul class="pricing-features">
@@ -47,7 +52,7 @@
         </ul>
         <span class="pricing-price">$400</span>
         <a href="#/" class="button-30">Free trial</a>
-      </div>
+      </div> -->
 
     </div> <!-- panel -->
 

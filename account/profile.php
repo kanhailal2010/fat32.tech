@@ -6,7 +6,7 @@ if(empty($subscription)) {
 }
 // debug($subscription);
 
-$planDetails = getPlan($subscription['sub_plan_code']);
+$planDetails = getPlans($subscription['sub_plan_code']);
 // debug($planDetails);
 ?>
 

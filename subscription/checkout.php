@@ -2,16 +2,18 @@
 // TODO:Add Checkbox for accepting terms and conditions
 
 if(!isset($_POST['selected_plan'])) {
-  redirectTo(SITE_URL.'subscription/plans');
+  // redirectTo(SITE_URL.'subscription/plans');
 }
 
 // $order_id = 'order_N6JrZYBG5ULug9';
 $order_id = '';
 // $order_details = $_SESSION['current_order'];
+// debug($order_details);
 if(isset($_POST['selected_plan']) && verifyCaptcha()) {
   $response         = new StdClass();
   $response->status = false;
-  $selectedPlan     = sanitizeInput($_POST['subscription_plan_code'], 'username');
+  $selectedPlan     = sanitizeInput($_POST['subscription_plan_code'], 'fullname');
+  $selectedPlanName = sanitizeInput($_POST['subscription_plan_name'], 'fullname');
   $selectedPlanId   = sanitizeInput($_POST['subscription_plan_id'], 'number');
   if(!isset($_POST['subscription_plan_code']) || !in_array($selectedPlan, planCodes())) {
     $response->msg = "Invalid subscription plan";
@@ -20,7 +22,7 @@ if(isset($_POST['selected_plan']) && verifyCaptcha()) {
   }
   
   try {
-    $plan       = getPlan($selectedPlan);
+    $plan       = getPlans($selectedPlan);
     $user       = getUserByEmail($_SESSION['user_email']);
     $user_id    = $user['id'];
     $user_email = $user['email'];
@@ -30,6 +32,7 @@ if(isset($_POST['selected_plan']) && verifyCaptcha()) {
       'user_id'     => $user_id,
       'user_email'  => $user_email,
       'plan_code'   => $selectedPlan,
+      'plan_desc'   => $selectedPlanName,
       'plan_id'     => $selectedPlanId
     ];
 
@@ -55,6 +58,7 @@ if(isset($_POST['selected_plan']) && verifyCaptcha()) {
         "user_email" => $order->notes->user_email,
         "user_id"    => $order->notes->user_id,
         "plan_code"  => $order->notes->plan_code,
+        "plan_desc"  => $order->notes->plan_desc,
         "plan_id"    => $order->notes->plan_id
       ],
       'created_at'      => $order->created_at
@@ -105,7 +109,7 @@ if(isset($_POST['selected_plan']) && verifyCaptcha()) {
             <h3 class="summary-header">Order Summary</h3>
             <div class="summary-table">
               <div class="pricing-feature-item">
-                <?php echo $order_details['notes']['plan'];?> Subscription
+                <?php echo $order_details['notes']['plan_code'];?> Subscription
               </div>
               <div class="pricing-feature-item">
                 &#8377;<?php 
@@ -126,7 +130,7 @@ var options = {
     "amount": "<?php echo $order_details['amount'];?>", // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
     "currency": "<?php echo $order_details['currency'];?>",
     "name": "FAT32 TECH",
-    "description": "<?php echo $order_details['notes']['plan'];?> Subscription",
+    "description": "<?php echo $order_details['notes']['plan_code'];?> Subscription",
     "image": "<?php echo siteUrl('/assets/images/fat32-logo.png'); ?>",
     "order_id": "<?php echo $order_id;?>", //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
     // "handler": function (response){
@@ -142,7 +146,12 @@ var options = {
         // "contact": ""
     },
     "notes": {
-        "payment_for": "<?php echo $order_details['notes']['plan'];?> Subscription",
+        "payment_for": "<?php echo $order_details['notes']['plan_code'];?> Subscription",
+        "user_email" : "<?=$order->notes->user_email?>",
+        "user_id"    : "<?=$order->notes->user_id?>",
+        "plan_code"  : "<?=$order->notes->plan_code?>",
+        "plan_desc"  : "<?=$order->notes->plan_desc?>",
+        "plan_id"    : "<?=$order->notes->plan_id?>"
     },
     "theme": {
         "color": "#3399cc"

@@ -417,25 +417,34 @@ function fieldsNotEmpty($fields, $exclude=[]) {
 
 
 function planCodes() {
-  $plans = array_keys(getPlan());
+  $plans = array_keys(getPlans());
   return $plans;
 }
 
 function getPlanDuration($planCode) {
-  $plan = getPlan($planCode);
+  $plan = getPlans($planCode);
   return ($plan) ? $plan['duration'] : 0;
 }
 
-function getPlan($plan = null) {
+function getPlans($plan = null) {
   $subscriptionPlans = [
-    "TR_TRIAL" => ["id"=> 1, "price"=>0, "duration" => 7, "name"=>"Trading Extension - 7 Day Trial","description"=>"Full access to features for a Trial period of 7 Working Days"],
-    "TR_EXT_M" => ["id"=> 2, "price"=>199,"duration" => 30, "name"=>"Trading Extension - Monthly Plan","description"=>"Full access to features for a Month"],
-    "TR_EXT_HY" => ["id"=> 3, "price"=>999,"duration" => 182, "name"=>"Trading Extension - Half Yearly Plan","description"=>"Full access to features for a period of 6 Months"],
-    "TR_EXT_Y" => ["id"=> 4, "price"=>1999,"duration" => 365, "name"=>"Trading Extension - Yearly Plan","description"=>"Full access to features for a period of 1 Year"],
+    "TR_TRIAL" => ["id"=> 1, "price"=>0, "duration" => 7, "title"=>"Trial", "name"=>"Trading Extension - 7 Day Trial","description"=>"Full access to features for a Trial period of 7 Working Days", "image"=>"plane.png"],
+    "TR_EXT_M" => ["id"=> 2, "price"=>199,"duration" => 30, "title"=>"Monthly", "name"=>"Trading Extension - Monthly Plan","description"=>"Full access to features for a Month", "image"=>"paperp300.png"],
+    "TR_EXT_HY" => ["id"=> 3, "price"=>999,"duration" => 182, "title"=>"Half-Yearly", "name"=>"Trading Extension - Half Yearly Plan","description"=>"Full access to features for a period of 6 Months", "image"=>"plane300.png"],
+    "TR_EXT_Y" => ["id"=> 4, "price"=>1999,"duration" => 365, "title"=>"Yearly", "name"=>"Trading Extension - Yearly Plan","description"=>"Full access to features for a period of 1 Year", "image"=>"rocket300.png"],
   ];
   if (isset($subscriptionPlans[$plan])){    return $subscriptionPlans[$plan]; }
 
   return ($plan && isset($subscriptionPlans[$plan])) ? $subscriptionPlans[$plan] : $subscriptionPlans;
+}
+
+function getPaidPlans() {
+  $paidPlans = [];
+  foreach (getPlans() as $key => $plan) {
+    if (!$plan['price']) { continue; }
+    $paidPlans[$key] = $plan;
+  }
+  return $paidPlans;
 }
 
 function saveToCache($key, $value){
