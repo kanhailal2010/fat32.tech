@@ -18,10 +18,11 @@
           <table class="table table-bordered" id="orderHistory" width="100%" cellspacing="0">
             <thead>
               <tr>
-                <th>Order Id</th>
-                <th>Order Date/Time</th>
-                <th>Amount</th>
                 <th>Transaction ID</th>
+                <th>Order Description</th>
+                <th>Order Date/Time</th>
+                <th>Order Id</th>
+                <th>Amount</th>
                 <th>Order Status</th>
               </tr>
             </thead>
@@ -33,3 +34,6 @@
 
 </div>
 <!-- /.container-fluid -->
+<?php 
+$globalJs = ['datatable' => 'https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js'];
+

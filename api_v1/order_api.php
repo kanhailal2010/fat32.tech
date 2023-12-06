@@ -10,11 +10,13 @@ $orders = $user ? getUsersPaidOrders($user['id']) : [];
 $orderData = new StdClass();
 $orderData->data = [];
 foreach ($orders as $key => $order) {
+  $notes = json_decode($order['order_notes']);
   $orderData->data[] = [
     $order['id'],
+    isset($notes->notes) ? $notes->notes->plan_desc .'('.$notes->notes->plan_code.')' : '',
     $order['order_date'],
-    '&#8377;'.($order['total_amount']/100).'/-',
     $order['pg_order_id'],
+    ($order['total_amount']/100),
     $order['order_status']
   ];
 }

@@ -241,7 +241,7 @@ function getUserSubscriptionDetails($email) {
 function getUsersPaidOrders($userId) {
   global $db,$debug;
   try {
-    $sql = "SELECT id, pg_order_id, order_date, order_status, total_amount FROM orders WHERE user_id=:user_id AND order_status=:order_status ORDER BY id DESC";
+    $sql = "SELECT id, pg_order_id, order_date, order_status, order_notes, total_amount FROM orders WHERE user_id=:user_id AND order_status=:order_status ORDER BY id DESC";
 
     $stmt = $db->prepare($sql);
     // $stmt->bindParam('user_id', $userId);
