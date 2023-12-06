@@ -3,10 +3,9 @@
 require_once(__DIR__.'/../partials/par_util.php');
 require_once(__DIR__.'/../account/db.php');
 
-
 $user = getUserByEmail($_SESSION['user_email']);
 
-$orders = getUsersPaidOrders($user['id']);
+$orders = $user ? getUsersPaidOrders($user['id']) : [];
 
 $orderData = new StdClass();
 $orderData->data = [];
