@@ -13,10 +13,11 @@ saveToCache('subscription',$subscription[1]);
 $subClass       = isset($subscription[1]['subscription_status']) && $subscription[1]['subscription_status'] == 'active' ? 'success' : 'danger';
 $subTxt         = isset($subscription[1]['subscription_status']) ? $subscription[1]['subscription_status'] : 'INACTIVE';
 
-$endDate        = isset($subscription[1]['sub_end_date']) ? $subscription[1]['sub_end_date'] : Date('Y-m-d H:i:s');
+$endDate        = isset($subscription[1]['sub_end_date']) ? $subscription[1]['sub_end_date'] : Date('Y-m-d 00:00:00');
 $subEndingIn    = daysRemaining($endDate);
 $endDateTimeStamp = strtotime($endDate);
-$todayTimeStamp   = strtotime(Date('Y-m-d'));
+$todayTimeStamp   = strtotime(Date('Y-m-d 00:00:00'));
+
 $endDateDisp    = Date('Y-m-d', $endDateTimeStamp);
 $endDateDisp    = ($todayTimeStamp > $endDateTimeStamp) ? "Ended:$endDateDisp" : "Ends:$endDateDisp";
 
