@@ -10,6 +10,7 @@ $order_id = '';
 // $order_details = $_SESSION['current_order'];
 // debug($order_details);
 if(isset($_POST['selected_plan']) && verifyCaptcha()) {
+  // debug($_POST);
   $response         = new StdClass();
   $response->status = false;
   $selectedPlan     = sanitizeInput($_POST['subscription_plan_code'], 'fullname');
@@ -37,7 +38,8 @@ if(isset($_POST['selected_plan']) && verifyCaptcha()) {
     ];
 
     $order = createRazorOrder($receipt, $amount, $notes);
-    // var_dump($order);
+    // debug("order ");
+    // debug($order);
     $response->error    = ['could not create order'];
     if(isset($order->error)) { 
       echo json_encode($response); 

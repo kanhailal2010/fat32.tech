@@ -83,6 +83,12 @@ function getPrettyPage($defaultPage){
   return getOnlyFilename($page);
 }
 
+function metaTitleDesc($meta) {
+  $title  = isset($meta['title']) ? $meta['title'] : 'Website Development 2023';
+  $desc   = isset($meta['desc']) ? $meta['desc'] : 'Build your E-commerce website, Product website using React, Nodejs or PHP Frameworks like Wordpress. We also optimize your website for higher search rankings and traffic.';
+  return [$title, $desc ];
+}
+
 $globalCss = isset($globalCss) ? $globalCss : [];
 function includeCSS(){
   global $globalCss;

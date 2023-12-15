@@ -13,7 +13,7 @@ foreach ($orders as $key => $order) {
   $notes = json_decode($order['order_notes']);
   $orderData->data[] = [
     $order['id'],
-    isset($notes->notes) ? $notes->notes->plan_desc .'('.$notes->notes->plan_code.')' : '',
+    isset($notes->notes) && isset($notes->notes->plan_code) ? $notes->notes->plan_desc .'('.$notes->notes->plan_code.')' : '',
     $order['order_date'],
     $order['pg_order_id'],
     ($order['total_amount']/100),

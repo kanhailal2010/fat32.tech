@@ -1,6 +1,13 @@
 <?php 
 require_once(__DIR__.'/partials/par_util.php'); 
 
+$meta = [
+  'home' => [
+    't' => 'Website Development 2023',
+    'd' => 'Build your E-commerce website, Product website using React, Nodejs or PHP Frameworks like Wordpress. We also optimize your website for higher search rankings and traffic.'
+  ],
+  ''
+];
 // load pages 
 $defaultPage = 'home';
 $page = getPrettyPage($defaultPage);

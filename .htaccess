@@ -6,7 +6,7 @@
 RewriteEngine On
 RewriteBase /
 
-  # ErrorDocument 404 http://fat32.com/404.html
+  ErrorDocument 404 http://fat32.com/404.html
   # ErrorDocument 500 http://fat32.com/500.html
   DirectoryIndex index.php
   <IfModule mod_negotiation.c>

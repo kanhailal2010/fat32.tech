@@ -9,8 +9,8 @@ $paidPlans = getPaidPlans();
   <div class="col-10 col-sm-10 text-center">
   
     <div class="panel pricing-table flex">
-      
-      <?php foreach($paidPlans as $code => $plan ): ?>
+      <?php $i = 0; ?>
+      <?php foreach($paidPlans as $code => $plan ): $i++;?>
       <div class="pricing-plan">
         <img src="<?=siteUrl('assets/images/'.$plan['image']);?>" alt="" class="pricing-img">
         <h2 class="pricing-header"><?=$plan['title']?></h2>
@@ -26,7 +26,7 @@ $paidPlans = getPaidPlans();
           <input type="hidden" value="<?=$code?>" id="subscription_plan_code" name="subscription_plan_code"/>
           <input type="hidden" value="<?=$plan['name']?>" id="subscription_plan_name" name="subscription_plan_name"/>
           <input type="hidden" value="2" id="subscription_plan_id" name="subscription_plan_id"/>
-          <input type="hidden" value="" id="plan1" name="recaptcha_response" />
+          <input type="hidden" value="" id="plan<?=$i?>" name="recaptcha_response" />
         <button type="submit" name="selected_plan" value="monthly" class="button-30">Buy <?=$plan['title']?></button>
         </form>
         <?php endif; ?>
@@ -67,7 +67,7 @@ $paidPlans = getPaidPlans();
 
 <script>
   let GOOGLE_CAPTCHA_SITE_KEY = '<?php echo $_ENV['GOOGLE_CAPTCHA_SITE_KEY']; ?>';
-  let captchaInputIds = ['#plan1'];
+  let captchaInputIds = ['#plan1','#plan2','#plan3'];
 </script>
 <?php 
   $globalJs = [
