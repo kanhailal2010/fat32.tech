@@ -1,7 +1,11 @@
 <?php 
 session_start();
 
-require_once __DIR__.'/../vendor/autoload.php';
+// Local
+// require_once __DIR__.'/../vendor/autoload.php';
+// Production
+require_once __DIR__.'/../../vendor/autoload.php';
+
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__.'/../');
 $dotenv->load();
 
