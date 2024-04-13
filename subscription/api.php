@@ -31,12 +31,12 @@ require_once(__DIR__.'/payment_methods.php');
  *    Then we check if the sub_end_date is greater than todays date
  */
 $checkedPrepaidSubscriptions = false;
-if(isset($_REQUEST['check_subscription']) && !empty($_REQUEST['check_subscription'])) {
+if(isset($_POST['check_subscription']) && !empty($_POST['check_subscription'])) {
   $res = [];
   $res['status'] = false;
   // if($_ENV['DEBUG']) { $res['server'] = $_SERVER;}
   
-  $valid = validateAjaxData($_REQUEST);
+  $valid = validateAjaxData($_POST);
   if(!$valid['status']) {
     $res['status']  = false;
     $res['msg']     = 'Error validating data';
@@ -48,7 +48,7 @@ if(isset($_REQUEST['check_subscription']) && !empty($_REQUEST['check_subscriptio
   $res['subscription']        = false;
 
   // Example usage
-  $email = str_replace('"','',$_REQUEST['email']);
+  $email = str_replace('"','',$_POST['email']);
   $subscription = getUserSubscriptionDetails($email);
   // debug($subscription);
   // if subscription details [not_found/inactive] but user details exist in users table
@@ -118,8 +118,8 @@ function extendUserSubscriptionFlow($user_id, $duration, $prepaid_sub_id){
 }
 
 // Razorpay webhook
-if(isset($_REQUEST['webhook'])) {
-  $status = sanitizeInput($_REQUEST['webhook'], 'fullname');
+if(isset($_POST['webhook'])) {
+  $status = sanitizeInput($_POST['webhook'], 'fullname');
   $bool = createWebhookTransaction($status);
 
   // On Error:: send internal error (500) to razorpay

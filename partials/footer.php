@@ -38,7 +38,7 @@
                     <div class="row justify-content-center">
                         <div class="col-lg-6">
                             <div class="copyright text-center mt-35">
-                                <p class="text">Copyright &copy; <?php echo Date('Y');?> — <a rel="nofollow" href="https://Fat32.tech">Fat32.tech</a>. All rights reserved. </p>
+                                <p class="text">Copyright &copy; <?php echo Date('Y');?> — <a rel="nofollow" href="<?=$_ENV['SITE_URL']?>"><?=$_ENV['WEBSITE']?></a>. All rights reserved. </p>
                             </div> <!--  copyright -->
                         </div>
                     </div>
